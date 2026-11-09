@@ -263,6 +263,41 @@ function BrowserTab({ theme, icon, title }: { theme: "light" | "dark"; icon: Rea
   )
 }
 
+type Theme = "light" | "dark"
+
+/** Backdrop the icon is previewed on, matching a light or dark browser. */
+const SURFACE: Record<Theme, string> = {
+  light: "bg-zinc-100 ring-black/5",
+  dark: "bg-zinc-900 ring-white/10",
+}
+
+function ThemeToggle({ value, onChange }: { value: Theme; onChange: (t: Theme) => void }) {
+  return (
+    <div role="radiogroup" aria-label="Preview theme" className="inline-flex p-0.5 rounded-lg bg-white/[0.04] ring-1 ring-inset ring-white/10">
+      {(
+        [
+          ["light", Sun, "Light"],
+          ["dark", Moon, "Dark"],
+        ] as const
+      ).map(([t, Icon, label]) => (
+        <button
+          key={t}
+          type="button"
+          role="radio"
+          aria-checked={value === t}
+          onClick={() => onChange(t)}
+          className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium transition-colors ${
+            value === t ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-200"
+          }`}
+        >
+          <Icon className="w-3.5 h-3.5" />
+          {label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false)
   return (
@@ -293,6 +328,7 @@ export default function FaviconTool() {
   const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG)
   const [options, setOptions] = useState<Options>(DEFAULT_OPTIONS)
   const [formError, setFormError] = useState<string | null>(null)
+  const [previewTheme, setPreviewTheme] = useState<Theme>("light")
 
   const set = <K extends keyof Config>(key: K, value: Config[K]) => setCfg((c) => ({ ...c, [key]: value }))
 
@@ -402,18 +438,19 @@ export default function FaviconTool() {
         {task.result && (
           <div className="space-y-6">
             {/* Tab previews */}
-            <div className={`grid gap-3 ${darkTab !== lightTab ? "sm:grid-cols-2" : ""}`}>
+            <div className="grid gap-3 sm:grid-cols-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <BrowserTab theme="light" title={appTitle} icon={lightTab && <img src={lightTab} alt="" className="w-4 h-4" />} />
-              {darkTab !== lightTab && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <BrowserTab theme="dark" title={appTitle} icon={darkTab && <img src={darkTab} alt="" className="w-4 h-4" />} />
-              )}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <BrowserTab theme="dark" title={appTitle} icon={darkTab && <img src={darkTab} alt="" className="w-4 h-4" />} />
             </div>
 
             {/* Icon sizes */}
             <div className="space-y-2.5">
-              <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Icons</span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Icons</span>
+                <ThemeToggle value={previewTheme} onChange={setPreviewTheme} />
+              </div>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {icons.map((f, i) => (
                   <div
@@ -421,7 +458,7 @@ export default function FaviconTool() {
                     className="group animate-fade-up relative flex flex-col items-center gap-2 p-3 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.07]"
                     style={{ animationDelay: `${i * 50}ms` }}
                   >
-                    <div className="grid place-items-center w-16 h-16 rounded-lg bg-checker">
+                    <div className={`grid place-items-center w-16 h-16 rounded-lg ring-1 ring-inset transition-colors duration-300 ${SURFACE[previewTheme]}`}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={url(f)}
@@ -498,22 +535,39 @@ export default function FaviconTool() {
       {/* Preview (first on mobile) */}
       <aside className="md:order-2 space-y-3">
         <div className="md:sticky md:top-6 space-y-3">
-          <div className="grid place-items-center aspect-square rounded-2xl bg-checker ring-1 ring-white/10 p-6">
-            <div key={cfg.source} className="animate-pop-in">
-              <IconArt cfg={cfg} size={128} imageUrl={imageUrl} />
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Preview</span>
+            <ThemeToggle value={previewTheme} onChange={setPreviewTheme} />
+          </div>
+          <div
+            className={`grid place-items-center aspect-square rounded-2xl ring-1 ring-inset p-6 transition-colors duration-300 ${SURFACE[previewTheme]}`}
+          >
+            <div key={`${cfg.source}-${previewTheme}`} className="animate-pop-in">
+              <IconArt cfg={cfg} size={128} variant={previewTheme} imageUrl={imageUrl} />
             </div>
           </div>
-          <div className="flex items-end justify-center gap-4 rounded-xl p-3 bg-white/[0.03] ring-1 ring-inset ring-white/[0.07]">
+          <div
+            className={`flex items-end justify-center gap-4 rounded-xl p-3 ring-1 ring-inset transition-colors duration-300 ${SURFACE[previewTheme]}`}
+          >
             {[48, 32, 16].map((s) => (
               <div key={s} className="flex flex-col items-center gap-1.5">
-                <IconArt cfg={cfg} size={s} imageUrl={imageUrl} />
+                <IconArt cfg={cfg} size={s} variant={previewTheme} imageUrl={imageUrl} />
                 <span className="text-[10px] font-mono text-zinc-500">{s}px</span>
               </div>
             ))}
           </div>
           <BrowserTab theme="light" title={appTitle} icon={<IconArt cfg={cfg} size={16} imageUrl={imageUrl} />} />
-          {showDark && (
-            <BrowserTab theme="dark" title={appTitle} icon={<IconArt cfg={cfg} size={16} variant="dark" imageUrl={imageUrl} />} />
+          <BrowserTab theme="dark" title={appTitle} icon={<IconArt cfg={cfg} size={16} variant="dark" imageUrl={imageUrl} />} />
+          {previewTheme === "dark" && canDark && !showDark && (
+            <p className="animate-fade-up text-[11px] text-zinc-400 text-center">
+              Same colors as light mode.{" "}
+              <button type="button" onClick={() => set("dark", true)} className="text-violet-300 hover:underline underline-offset-2">
+                Customize dark mode
+              </button>
+            </p>
+          )}
+          {previewTheme === "dark" && cfg.source === "image" && (
+            <p className="animate-fade-up text-[11px] text-zinc-400 text-center">Image icons use the same design in both themes.</p>
           )}
           <p className="text-[11px] text-center text-zinc-600">Live preview — final icons are rendered on the server.</p>
         </div>
