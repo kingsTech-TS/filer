@@ -77,8 +77,8 @@
 }
 
 @theme inline {
-  --font-sans: "Geist", "Geist Fallback";
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -124,4 +124,116 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* ---------- Modern UI effects ---------- */
+@keyframes float-blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.08); }
+  66% { transform: translate(-25px, 20px) scale(0.95); }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 oklch(0.72 0.17 155 / 0.45); }
+  100% { box-shadow: 0 0 0 18px oklch(0.72 0.17 155 / 0); }
+}
+
+.animate-blob { animation: float-blob 18s ease-in-out infinite; }
+.animate-shimmer { animation: shimmer 1.6s ease-in-out infinite; }
+.animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-pop-in { animation: pop-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.animate-ring-pulse { animation: ring-pulse 1.6s ease-out infinite; }
+
+.bg-grid {
+  background-image:
+    linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(1 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 100%);
+}
+
+.bg-checker {
+  background-color: oklch(0.22 0 0);
+  background-image:
+    linear-gradient(45deg, oklch(0.28 0 0) 25%, transparent 25%),
+    linear-gradient(-45deg, oklch(0.28 0 0) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, oklch(0.28 0 0) 75%),
+    linear-gradient(-45deg, transparent 75%, oklch(0.28 0 0) 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-blob, .animate-shimmer, .animate-ring-pulse { animation: none; }
+  .animate-fade-up, .animate-pop-in { animation-duration: 0.01ms; }
+}
+
+/* ---------- Loader animations ---------- */
+@keyframes rise {
+  0% { transform: translateY(10px) scale(0.6); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translateY(-34px) scale(1); opacity: 0; }
+}
+@keyframes fall {
+  0% { transform: translateY(-34px) scale(1); opacity: 0; }
+  25% { opacity: 1; }
+  100% { transform: translateY(10px) scale(0.6); opacity: 0; }
+}
+@keyframes nudge-up {
+  0%, 100% { transform: translateY(3px); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes nudge-down {
+  0%, 100% { transform: translateY(-3px); }
+  50% { transform: translateY(4px); }
+}
+@keyframes swap-out {
+  0%, 40% { opacity: 1; transform: translateY(0) rotateX(0); }
+  50%, 90% { opacity: 0; transform: translateY(-10px) rotateX(70deg); }
+  100% { opacity: 1; transform: translateY(0) rotateX(0); }
+}
+@keyframes swap-in {
+  0%, 40% { opacity: 0; transform: translateY(10px) rotateX(-70deg); }
+  50%, 90% { opacity: 1; transform: translateY(0) rotateX(0); }
+  100% { opacity: 0; transform: translateY(10px) rotateX(-70deg); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(90deg); }
+}
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-r, 52px)) rotate(0deg); }
+  to { transform: rotate(360deg) translateX(var(--orbit-r, 52px)) rotate(-360deg); }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 0.55; }
+  50% { transform: scale(1.12); opacity: 0.9; }
+}
+
+.animate-rise { animation: rise 1.8s ease-out infinite; }
+.animate-fall { animation: fall 1.8s ease-in infinite; }
+.animate-nudge-up { animation: nudge-up 1.2s ease-in-out infinite; }
+.animate-nudge-down { animation: nudge-down 0.9s ease-in-out infinite; }
+.animate-swap-out { animation: swap-out 3s ease-in-out infinite; }
+.animate-swap-in { animation: swap-in 3s ease-in-out infinite; }
+.animate-twinkle { animation: twinkle 1.8s ease-in-out infinite; }
+.animate-orbit { animation: orbit 2.4s linear infinite; }
+.animate-breathe { animation: breathe 2.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise, .animate-fall, .animate-nudge-up, .animate-nudge-down,
+  .animate-twinkle, .animate-orbit, .animate-breathe { animation: none; }
+  .animate-swap-out, .animate-swap-in { animation-duration: 6s; }
 }
