@@ -8,8 +8,8 @@ const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" })
 const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" })
 
 export const metadata: Metadata = {
-  title: "Filer — Convert files & remove backgrounds",
-  description: "Convert documents, images, audio and video, or remove photo backgrounds in seconds.",
+  title: "Filer — Convert, zip, remove backgrounds & make favicons",
+  description: "Convert documents, media and spreadsheets, remove photo backgrounds, zip and unzip files, and generate favicons in seconds.",
   generator: "v0.app",
   icons: {
     icon: [

@@ -1,84 +1,24 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
 import { ArrowDown, Check } from "lucide-react"
-import { API_URL, getErrorMessage } from "@/lib/api"
+import { useDownload } from "@/hooks/use-download"
 
 interface DownloadButtonProps {
-  jobId: string
-  fileName?: string
+  /** API path, e.g. /download/{jobId} */
+  path: string
+  fileName: string
+  label?: string
 }
 
-type State = "idle" | "downloading" | "saved"
-
-/** Reads a response body while reporting progress (null when size is unknown). */
-async function readWithProgress(response: Response, onProgress: (percent: number | null) => void) {
-  const total = Number(response.headers.get("Content-Length")) || 0
-  if (!response.body) return response.blob()
-
-  const reader = response.body.getReader()
-  const chunks: BlobPart[] = []
-  let received = 0
-
-  for (;;) {
-    const { done, value } = await reader.read()
-    if (done) break
-    chunks.push(value)
-    received += value.length
-    onProgress(total ? Math.min(100, Math.round((received / total) * 100)) : null)
-  }
-
-  return new Blob(chunks, { type: response.headers.get("Content-Type") ?? undefined })
-}
-
-export default function DownloadButton({ jobId, fileName }: DownloadButtonProps) {
-  const [state, setState] = useState<State>("idle")
-  const [progress, setProgress] = useState<number | null>(0)
-  const [error, setError] = useState<string | null>(null)
-  const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  useEffect(() => () => {
-    if (resetTimer.current) clearTimeout(resetTimer.current)
-  }, [])
-
-  const handleDownload = async () => {
-    if (state === "downloading") return
-    try {
-      setError(null)
-      setProgress(0)
-      setState("downloading")
-
-      const response = await fetch(`${API_URL}/download/${jobId}`)
-      if (!response.ok) throw new Error(await getErrorMessage(response, "Download failed"))
-
-      const blob = await readWithProgress(response, setProgress)
-
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement("a")
-      a.href = url
-      a.download = fileName || `converted-file-${jobId}`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
-
-      setProgress(100)
-      setState("saved")
-      resetTimer.current = setTimeout(() => setState("idle"), 2500)
-    } catch (err) {
-      console.error("Download error:", err)
-      setError(err instanceof Error ? err.message : "Download failed")
-      setState("idle")
-    }
-  }
-
+export default function DownloadButton({ path, fileName, label = "Download file" }: DownloadButtonProps) {
+  const { state, progress, error, download } = useDownload(path, fileName)
   const downloading = state === "downloading"
   const saved = state === "saved"
 
   return (
     <div className="space-y-2">
       <button
-        onClick={handleDownload}
+        onClick={download}
         disabled={downloading}
         aria-busy={downloading}
         className={`group relative w-full overflow-hidden inline-flex items-center justify-center gap-2 h-12 rounded-xl font-semibold text-white shadow-lg transition-all duration-300 active:scale-[0.99] disabled:cursor-progress ${
@@ -87,7 +27,6 @@ export default function DownloadButton({ jobId, fileName }: DownloadButtonProps)
             : "bg-gradient-to-r from-emerald-500 to-teal-500 shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:brightness-110"
         }`}
       >
-        {/* Fill */}
         {downloading && (
           <span
             aria-hidden
@@ -120,10 +59,58 @@ export default function DownloadButton({ jobId, fileName }: DownloadButtonProps)
               ? progress === null
                 ? "Downloading…"
                 : `Downloading ${progress}%`
-              : "Download file"}
+              : label}
         </span>
       </button>
       {error && <p className="text-sm text-rose-300 text-center animate-fade-up">{error}</p>}
     </div>
+  )
+}
+
+const R = 13
+const C = 2 * Math.PI * R
+
+/** Small round download button with a progress ring, for file lists. */
+export function DownloadIconButton({ path, fileName }: { path: string; fileName: string }) {
+  const { state, progress, error, download } = useDownload(path, fileName)
+  const downloading = state === "downloading"
+
+  return (
+    <button
+      onClick={download}
+      disabled={downloading}
+      title={error ?? `Download ${fileName}`}
+      aria-label={`Download ${fileName}`}
+      className={`relative grid place-items-center w-8 h-8 shrink-0 rounded-full transition-colors ${
+        state === "saved"
+          ? "bg-emerald-500/20 text-emerald-300"
+          : error
+            ? "bg-rose-500/15 text-rose-300"
+            : "text-zinc-400 hover:text-white hover:bg-white/10"
+      }`}
+    >
+      {downloading && (
+        <svg viewBox="0 0 32 32" className={`absolute inset-0 -rotate-90 ${progress === null ? "animate-spin" : ""}`}>
+          <circle cx="16" cy="16" r={R} fill="none" stroke="white" strokeOpacity={0.1} strokeWidth={2.5} />
+          <circle
+            cx="16"
+            cy="16"
+            r={R}
+            fill="none"
+            stroke="#34d399"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeDasharray={C}
+            strokeDashoffset={C * (1 - (progress ?? 30) / 100)}
+            className="transition-[stroke-dashoffset] duration-200"
+          />
+        </svg>
+      )}
+      {state === "saved" ? (
+        <Check className="w-4 h-4 animate-pop-in" strokeWidth={3} />
+      ) : (
+        <ArrowDown className={`w-4 h-4 ${downloading ? "animate-nudge-down" : ""}`} />
+      )}
+    </button>
   )
 }

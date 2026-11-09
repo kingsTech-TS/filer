@@ -1,15 +1,18 @@
 "use client"
 
-import { ArrowUp, Check, CloudUpload, Download, Repeat, Sparkles, WandSparkles } from "lucide-react"
+import { ArrowUp, Check, CloudUpload, Download, Repeat, Sparkles, type LucideIcon } from "lucide-react"
+import { TOOL_BY_ID, type ToolId } from "@/lib/tools"
 
 type Stage = "uploading" | "processing" | "finished" | "failed"
 
 interface StageLoaderProps {
   status: Stage
   progress: number
-  mode: "convert" | "remove-bg"
-  inputExt: string
-  outputExt: string
+  mode: ToolId
+  inputExt?: string
+  outputExt?: string
+  /** Line under "Processing…"; a sensible default is used per tool. */
+  caption?: string
 }
 
 const RING_R = 54
@@ -90,7 +93,26 @@ function ConvertingVisual({ inputExt, outputExt }: { inputExt: string; outputExt
   )
 }
 
-function RemovingBgVisual() {
+/** Files dropping into (zip) or floating out of (unzip) a box. */
+function ArchiveVisual({ icon: Icon, direction }: { icon: LucideIcon; direction: "in" | "out" }) {
+  return (
+    <>
+      <Ring />
+      {[30, 50, 70].map((left, i) => (
+        <span
+          key={left}
+          className={`absolute top-[42%] w-2.5 h-3 rounded-[3px] bg-gradient-to-b from-amber-200 to-yellow-400 shadow-[0_0_8px] shadow-amber-400/50 ${
+            direction === "in" ? "animate-fall" : "animate-rise"
+          }`}
+          style={{ left: `calc(${left}% - 5px)`, animationDelay: `${i * 0.55}s` }}
+        />
+      ))}
+      <Icon className="relative top-3 w-10 h-10 text-amber-200" />
+    </>
+  )
+}
+
+function SparkleVisual({ icon: Icon }: { icon: LucideIcon }) {
   return (
     <>
       <Ring />
@@ -106,16 +128,16 @@ function RemovingBgVisual() {
           style={{ top: s.top, left: s.left, animationDelay: s.delay }}
         />
       ))}
-      <WandSparkles className="relative w-9 h-9 text-violet-200 animate-nudge-up [animation-duration:1.8s]" />
+      <Icon className="relative w-9 h-9 text-violet-200 animate-nudge-up [animation-duration:1.8s]" />
     </>
   )
 }
 
-function Stepper({ status }: { status: Stage }) {
+function Stepper({ status, step, icon }: { status: Stage; step: string; icon: LucideIcon }) {
   const current = status === "uploading" ? 0 : status === "processing" ? 1 : 2
   const steps = [
     { label: "Upload", icon: CloudUpload },
-    { label: "Convert", icon: Repeat },
+    { label: step, icon },
     { label: "Download", icon: Download },
   ]
 
@@ -166,16 +188,45 @@ function Stepper({ status }: { status: Stage }) {
   )
 }
 
-export default function StageLoader({ status, progress, mode, inputExt, outputExt }: StageLoaderProps) {
+const DEFAULT_CAPTIONS: Record<ToolId, string> = {
+  convert: "Converting your file",
+  "remove-bg": "Detecting the subject & removing the background",
+  zip: "Compressing your files",
+  unzip: "Extracting files from the archive",
+  favicon: "Rendering icons for every size",
+}
+
+export default function StageLoader({
+  status,
+  progress,
+  mode,
+  inputExt = "",
+  outputExt = "",
+  caption: customCaption,
+}: StageLoaderProps) {
   const uploading = status === "uploading"
+  const tool = TOOL_BY_ID[mode]
 
   const caption = uploading
     ? progress >= 100
       ? "Upload complete — handing off…"
-      : "Uploading your file"
-    : mode === "remove-bg"
-      ? "Detecting the subject & removing the background"
-      : `Converting ${inputExt.toUpperCase()} to ${outputExt.toUpperCase()}`
+      : "Uploading"
+    : (customCaption ??
+      (mode === "convert" && inputExt && outputExt
+        ? `Converting ${inputExt.toUpperCase()} to ${outputExt.toUpperCase()}`
+        : DEFAULT_CAPTIONS[mode]))
+
+  const visual = uploading ? (
+    <UploadingVisual progress={progress} />
+  ) : mode === "convert" ? (
+    <ConvertingVisual inputExt={inputExt} outputExt={outputExt} />
+  ) : mode === "zip" ? (
+    <ArchiveVisual icon={tool.icon} direction="in" />
+  ) : mode === "unzip" ? (
+    <ArchiveVisual icon={tool.icon} direction="out" />
+  ) : (
+    <SparkleVisual icon={tool.icon} />
+  )
 
   return (
     <div className="space-y-6">
@@ -184,17 +235,11 @@ export default function StageLoader({ status, progress, mode, inputExt, outputEx
           {/* Soft glow */}
           <div
             className={`absolute inset-4 rounded-full blur-2xl animate-breathe ${
-              uploading ? "bg-sky-500/30" : "bg-violet-500/30"
+              uploading ? "bg-sky-500/30" : mode === "zip" || mode === "unzip" ? "bg-amber-500/25" : "bg-violet-500/30"
             }`}
           />
           <div key={uploading ? "up" : mode} className="absolute inset-0 grid place-items-center animate-pop-in">
-            {uploading ? (
-              <UploadingVisual progress={progress} />
-            ) : mode === "remove-bg" ? (
-              <RemovingBgVisual />
-            ) : (
-              <ConvertingVisual inputExt={inputExt} outputExt={outputExt} />
-            )}
+            {visual}
           </div>
         </div>
 
@@ -220,7 +265,7 @@ export default function StageLoader({ status, progress, mode, inputExt, outputEx
         </div>
       </div>
 
-      <Stepper status={status} />
+      <Stepper status={status} step={tool.step} icon={tool.icon} />
     </div>
   )
 }
