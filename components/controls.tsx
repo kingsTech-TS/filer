@@ -1,7 +1,8 @@
 "use client"
 
 import type React from "react"
-import { TriangleAlert, type LucideIcon } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { Check, Copy, TriangleAlert, type LucideIcon } from "lucide-react"
 
 export const inputClass =
   "w-full h-10 px-3 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 bg-white/[0.04] ring-1 ring-inset ring-white/10 focus:outline-none focus:ring-2 focus:ring-violet-400/60 transition-shadow disabled:opacity-50"
@@ -206,6 +207,39 @@ export function ColorField({
         </button>
       )}
     </div>
+  )
+}
+
+export function CopyButton({ text, label = "Copy" }: { text: string; label?: string }) {
+  const [copied, setCopied] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current)
+    },
+    [],
+  )
+
+  return (
+    <button
+      type="button"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(text)
+          setCopied(true)
+          if (timer.current) clearTimeout(timer.current)
+          timer.current = setTimeout(() => setCopied(false), 2000)
+        } catch {
+          // clipboard blocked
+        }
+      }}
+      className={`shrink-0 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-medium transition-colors ${
+        copied ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-zinc-300 hover:bg-white/15 hover:text-white"
+      }`}
+    >
+      {copied ? <Check className="w-3.5 h-3.5 animate-pop-in" /> : <Copy className="w-3.5 h-3.5" />}
+      {copied ? "Copied" : label}
+    </button>
   )
 }
 

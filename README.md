@@ -5,7 +5,7 @@
 **Every file tool. One place.**
 
 Convert documents, media and spreadsheets, remove photo backgrounds,<br />
-zip and unzip files, and generate favicons, all in the browser.
+zip and unzip files, generate favicons, and turn links into QR codes, all in the browser.
 
 [![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
@@ -37,6 +37,7 @@ zip and unzip files, and generate favicons, all in the browser.
 | **Zip**               | Bundles up to 50 files of any type into one `.zip` with a custom name.                           |
 | **Unzip**             | Lists every file inside a `.zip`, with its folder path, and downloads them one at a time.        |
 | **Favicon**           | Builds a full favicon pack (ICO, PNG sizes, Apple and Android icons, manifest and `<head>` HTML) from text, an emoji or an image. Includes a live light/dark preview. |
+| **QR Code**           | Turns a link into a QR code (PNG and SVG) with custom colors, size, margin and error correction. Can shorten the link first with TinyURL, or just make a short link. |
 
 All tools share:
 
@@ -108,7 +109,8 @@ filer/
 │   │   ├── convert-tool.tsx # Convert and Remove background
 │   │   ├── zip-tool.tsx
 │   │   ├── unzip-tool.tsx
-│   │   └── favicon-tool.tsx
+│   │   ├── favicon-tool.tsx
+│   │   └── qr-tool.tsx      # QR codes and short links
 │   ├── controls.tsx         # Form controls (segmented, slider, switch, color…)
 │   ├── download-button.tsx  # Download buttons with streaming progress
 │   ├── dropzone.tsx         # Drag-and-drop file picker
@@ -138,8 +140,11 @@ The frontend talks to [filer-api](https://filer-api.onrender.com/docs):
 | `POST` | `/unzip`                          | Unzip                                  |
 | `GET`  | `/favicon/options`                | Favicon: shapes, fonts and limits      |
 | `POST` | `/favicon/{text,emoji,image}`     | Favicon                                |
+| `GET`  | `/qr/options`                     | QR Code: sizes, margins and limits     |
+| `POST` | `/qr`                             | QR Code (optionally shortened first)   |
+| `POST` | `/shorten`                        | QR Code: short link only               |
 | `GET`  | `/download/{job_id}`              | Download a result                      |
-| `GET`  | `/download/{job_id}/files/{i}`    | Download one file from an unzip or favicon job |
+| `GET`  | `/download/{job_id}/files/{i}`    | Download one file from an unzip, favicon or QR job |
 
 ## Deployment
 
@@ -152,5 +157,5 @@ The app is deployed on [Vercel](https://vercel.com):
 <br />
 
 <div align="center">
-<sub>Built with Next.js · Powered by CloudConvert and remove.bg</sub>
+<sub>Built with Next.js · Powered by CloudConvert, remove.bg and TinyURL</sub>
 </div>

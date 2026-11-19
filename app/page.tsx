@@ -6,6 +6,7 @@ import ConvertTool from "@/components/tools/convert-tool"
 import ZipTool from "@/components/tools/zip-tool"
 import UnzipTool from "@/components/tools/unzip-tool"
 import FaviconTool from "@/components/tools/favicon-tool"
+import QrTool from "@/components/tools/qr-tool"
 import { TOOLS, type ToolId } from "@/lib/tools"
 
 export default function Home() {
@@ -57,8 +58,8 @@ export default function Home() {
             </span>
           </h1>
           <p className="mt-5 text-base sm:text-lg text-zinc-400">
-            Convert documents, media and spreadsheets, remove photo backgrounds, zip and unzip files, and generate
-            favicons — in seconds.
+            Convert documents, media and spreadsheets, remove photo backgrounds, zip and unzip files, generate
+            favicons, and turn links into QR codes — in seconds.
           </p>
         </div>
 
@@ -91,7 +92,7 @@ export default function Home() {
         {/* Card */}
         <div
           className={`relative mx-auto mt-5 animate-fade-up [animation-delay:120ms] transition-[max-width] duration-500 ${
-            tool === "favicon" ? "max-w-3xl" : "max-w-lg"
+            tool === "favicon" || tool === "qr" ? "max-w-3xl" : "max-w-lg"
           }`}
         >
           <div aria-hidden className="absolute -inset-px rounded-[28px] bg-gradient-to-b from-white/20 via-white/5 to-transparent" />
@@ -102,6 +103,7 @@ export default function Home() {
               {tool === "zip" && <ZipTool />}
               {tool === "unzip" && <UnzipTool />}
               {tool === "favicon" && <FaviconTool />}
+              {tool === "qr" && <QrTool />}
             </div>
           </div>
         </div>
@@ -120,7 +122,7 @@ export default function Home() {
         </div>
 
         {/* Tools overview */}
-        <section className="mx-auto mt-20 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 animate-fade-up [animation-delay:280ms]">
+        <section className="mx-auto mt-20 grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-fade-up [animation-delay:280ms]">
           {TOOLS.map(({ id, icon: Icon, label, description }) => (
             <button
               key={id}

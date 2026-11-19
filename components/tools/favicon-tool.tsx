@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
-import { AppWindow, Check, Copy, Image as ImageIcon, Moon, Pencil, RotateCcw, Smile, Sun, Type } from "lucide-react"
+import { AppWindow, Image as ImageIcon, Moon, Pencil, RotateCcw, Smile, Sun, Type } from "lucide-react"
 import Dropzone from "@/components/dropzone"
 import SelectedFile from "@/components/selected-file"
 import TaskView from "@/components/task-view"
@@ -10,6 +10,7 @@ import DownloadButton, { DownloadIconButton } from "@/components/download-button
 import FileBadge from "@/components/file-badge"
 import {
   ColorField,
+  CopyButton,
   Field,
   InlineError,
   PrimaryButton,
@@ -295,30 +296,6 @@ function ThemeToggle({ value, onChange }: { value: Theme; onChange: (t: Theme) =
         </button>
       ))}
     </div>
-  )
-}
-
-function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
-  return (
-    <button
-      type="button"
-      onClick={async () => {
-        try {
-          await navigator.clipboard.writeText(text)
-          setCopied(true)
-          setTimeout(() => setCopied(false), 2000)
-        } catch {
-          // clipboard blocked
-        }
-      }}
-      className={`inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-medium transition-colors ${
-        copied ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-zinc-300 hover:bg-white/15 hover:text-white"
-      }`}
-    >
-      {copied ? <Check className="w-3.5 h-3.5 animate-pop-in" /> : <Copy className="w-3.5 h-3.5" />}
-      {copied ? "Copied" : "Copy"}
-    </button>
   )
 }
 

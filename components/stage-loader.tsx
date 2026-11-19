@@ -194,6 +194,7 @@ const DEFAULT_CAPTIONS: Record<ToolId, string> = {
   zip: "Compressing your files",
   unzip: "Extracting files from the archive",
   favicon: "Rendering icons for every size",
+  qr: "Drawing your QR code",
 }
 
 export default function StageLoader({

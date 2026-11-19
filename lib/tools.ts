@@ -1,6 +1,6 @@
-import { AppWindow, Package, PackageOpen, Repeat, WandSparkles, type LucideIcon } from "lucide-react"
+import { AppWindow, Package, PackageOpen, QrCode, Repeat, WandSparkles, type LucideIcon } from "lucide-react"
 
-export type ToolId = "convert" | "remove-bg" | "zip" | "unzip" | "favicon"
+export type ToolId = "convert" | "remove-bg" | "zip" | "unzip" | "favicon" | "qr"
 
 export interface Tool {
   id: ToolId
@@ -46,6 +46,13 @@ export const TOOLS: Tool[] = [
     icon: AppWindow,
     step: "Generate",
     description: "Icons for every device from text, emoji or an image",
+  },
+  {
+    id: "qr",
+    label: "QR Code",
+    icon: QrCode,
+    step: "Generate",
+    description: "Turn any link into a QR code, and shorten it too",
   },
 ]
 
