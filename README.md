@@ -36,7 +36,7 @@ zip and unzip files, generate favicons, and turn links into QR codes, all in the
 | **Remove background** | Cuts the subject out of a PNG, JPG or WEBP photo and returns a transparent PNG with a preview.   |
 | **Zip**               | Bundles up to 50 files of any type into one `.zip` with a custom name.                           |
 | **Unzip**             | Lists every file inside a `.zip`, with its folder path, and downloads them one at a time.        |
-| **Favicon**           | Builds a full favicon pack (ICO, PNG sizes, Apple and Android icons, manifest and `<head>` HTML) from text, an emoji or an image. Includes a live light/dark preview. |
+| **Favicon**           | Builds a full favicon pack (ICO, PNG sizes, Apple and Android icons, manifest and `<head>` HTML) from text, an emoji or an image. Text can use any Google Font or an uploaded font file (TTF, OTF, TTC, WOFF, WOFF2). Includes a live light/dark preview. |
 | **QR Code**           | Turns a link into a QR code (PNG and SVG) with custom colors, size, margin and error correction. Can shorten the link first with TinyURL, or just make a short link. |
 
 All tools share:

@@ -2,7 +2,7 @@
 
 import type React from "react"
 import { useEffect, useMemo, useState } from "react"
-import { AppWindow, Image as ImageIcon, Moon, Pencil, RotateCcw, Smile, Sun, Type } from "lucide-react"
+import { AppWindow, FileType, Image as ImageIcon, Moon, Pencil, RotateCcw, Smile, Sun, Type, Upload } from "lucide-react"
 import Dropzone from "@/components/dropzone"
 import SelectedFile from "@/components/selected-file"
 import TaskView from "@/components/task-view"
@@ -28,6 +28,7 @@ import { formatSize, getExtension, validateFile } from "@/lib/files"
 type Source = "text" | "emoji" | "image"
 type Shape = "square" | "rounded" | "circle" | "squircle" | "hexagon" | "none"
 type Fit = "cover" | "contain"
+type FontSource = "google" | "upload"
 
 interface Options {
   shapes: Shape[]
@@ -35,6 +36,8 @@ interface Options {
   font_weights: number[]
   image_formats: string[]
   suggested_fonts: string[]
+  font_file_formats: string[]
+  max_font_file_mb: number
 }
 
 // Used until /favicon/options loads (mirrors filer-api)
@@ -47,6 +50,8 @@ const DEFAULT_OPTIONS: Options = {
     "Roboto", "Open Sans", "Inter", "Montserrat", "Poppins", "Lato", "Oswald", "Raleway",
     "Playfair Display", "Merriweather", "Nunito", "Bebas Neue", "Lobster", "Pacifico", "Fira Code", "Roboto Mono",
   ],
+  font_file_formats: ["ttf", "otf", "ttc", "woff", "woff2"],
+  max_font_file_mb: 5,
 }
 
 const QUICK_EMOJI = ["🚀", "🔥", "⚡", "🎨", "💡", "📁", "🌈", "🍕", "🐱", "⭐", "❤️", "✅"]
@@ -56,6 +61,8 @@ interface Config {
   appName: string
   // text
   text: string
+  fontSource: FontSource
+  fontFile: File | null
   font: string
   weight: number
   italic: boolean
@@ -83,6 +90,8 @@ const DEFAULT_CONFIG: Config = {
   source: "text",
   appName: "",
   text: "F",
+  fontSource: "google",
+  fontFile: null,
   font: "Inter",
   weight: 700,
   italic: false,
@@ -156,6 +165,67 @@ function useGoogleFont(family: string, weight: number, italic: boolean) {
   }, [family, weight, italic])
 }
 
+let uploadedFontCount = 0
+
+/** Registers an uploaded font file with the browser for the live preview; returns its CSS family name. */
+function useUploadedFont(file: File | null) {
+  const [family, setFamily] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!file) return
+    let cancelled = false
+    const url = URL.createObjectURL(file)
+    const face = new FontFace(`filer-upload-${++uploadedFontCount}`, `url(${url})`)
+    face
+      .load()
+      .then((loaded) => {
+        if (cancelled) return
+        document.fonts.add(loaded)
+        setFamily(loaded.family)
+      })
+      .catch(() => {
+        // The browser can't preview it (e.g. a .ttc); the server may still render it
+      })
+    return () => {
+      cancelled = true
+      document.fonts.delete(face)
+      URL.revokeObjectURL(url)
+      setFamily(null)
+    }
+  }, [file])
+
+  return family
+}
+
+/** Share of the icon's width that text may fill before it's shrunk (matches filer-api). */
+const textMaxWidth = (shape: Shape) => (ROUND_SHAPES.includes(shape) ? 0.78 : 0.9)
+
+/**
+ * Ink width of the text per 1px of font size, measured with the real font so the preview
+ * fits text exactly like the server does. Falls back to a rough estimate.
+ */
+function measureTextRatio(text: string, family: string, weight: number, italic: boolean): number {
+  const fallback = Math.max(text.length, 1) * 0.62
+  if (typeof document === "undefined" || !text) return fallback
+  const ctx = document.createElement("canvas").getContext("2d")
+  if (!ctx) return fallback
+  ctx.font = `${italic ? "italic " : ""}${weight} 100px "${family}", ui-sans-serif, system-ui`
+  const m = ctx.measureText(text)
+  const ink = m.actualBoundingBoxLeft + m.actualBoundingBoxRight
+  return ink > 0 ? ink / 100 : fallback
+}
+
+/** Changes whenever the browser finishes loading fonts, so text can be re-measured. */
+function useFontsLoaded() {
+  const [version, setVersion] = useState(0)
+  useEffect(() => {
+    const onLoad = () => setVersion((v) => v + 1)
+    document.fonts.addEventListener("loadingdone", onLoad)
+    return () => document.fonts.removeEventListener("loadingdone", onLoad)
+  }, [])
+  return version
+}
+
 /** Client-side approximation of what the backend will render. */
 function IconArt({
   cfg,
@@ -176,10 +246,8 @@ function IconArt({
 
   let content: React.ReactNode = null
   if (cfg.source === "text") {
-    const maxW = size * (ROUND_SHAPES.includes(shape) ? 0.78 : 0.9)
-    let px = (size * cfg.fontSize) / 100
-    const estWidth = Math.max(cfg.text.length, 1) * px * 0.62
-    if (estWidth > maxW) px *= maxW / estWidth
+    // fontSize has already been fitted to the shape (see maxTextPercent)
+    const px = (size * cfg.fontSize) / 100
     content = (
       <span
         style={{
@@ -317,7 +385,28 @@ export default function FaviconTool() {
     return () => controller.abort()
   }, [])
 
-  useGoogleFont(cfg.font, cfg.weight, cfg.italic)
+  const usingUploadedFont = cfg.source === "text" && cfg.fontSource === "upload"
+  useGoogleFont(cfg.fontSource === "google" ? cfg.font : "", cfg.weight, cfg.italic)
+  const uploadedFamily = useUploadedFont(cfg.fontSource === "upload" ? cfg.fontFile : null)
+
+  // What the preview draws with: an uploaded font carries its own weight and style
+  const fontCfg: Config =
+    cfg.fontSource === "upload"
+      ? { ...cfg, font: uploadedFamily ?? "ui-sans-serif", weight: 400, italic: false }
+      : cfg
+
+  // Text is shrunk to fit its shape, so past this size the slider has no effect
+  const fontsVersion = useFontsLoaded()
+  const textRatio = useMemo(
+    () => {
+      void fontsVersion // re-measure once fonts finish loading
+      return measureTextRatio(cfg.text.trim(), fontCfg.font, fontCfg.weight, fontCfg.italic)
+    },
+    [cfg.text, fontCfg.font, fontCfg.weight, fontCfg.italic, fontsVersion],
+  )
+  const maxTextPercent = (textMaxWidth(cfg.textShape) / textRatio) * 100
+  const textCapped = cfg.source === "text" && cfg.fontSize > maxTextPercent + 0.5
+  const previewCfg: Config = { ...fontCfg, fontSize: Math.min(cfg.fontSize, maxTextPercent) }
 
   const imageUrl = useMemo(() => (cfg.image ? URL.createObjectURL(cfg.image) : null), [cfg.image])
   useEffect(
@@ -333,11 +422,21 @@ export default function FaviconTool() {
     if (!err) set("image", f)
   }
 
+  const selectFontFile = (f: File) => {
+    let err = validateFile(f, options.font_file_formats)
+    if (!err && f.size > options.max_font_file_mb * 1024 * 1024) {
+      err = `${f.name} is ${formatSize(f.size)} — fonts can be up to ${options.max_font_file_mb} MB.`
+    }
+    setFormError(err)
+    if (!err) set("fontFile", f)
+  }
+
   const canDark = cfg.source !== "image"
   const showDark = canDark && cfg.dark
 
   const submit = () => {
     if (cfg.source === "text" && !cfg.text.trim()) return setFormError("Type 1–4 characters for your icon.")
+    if (usingUploadedFont && !cfg.fontFile) return setFormError("Choose a font file, or switch back to Google Fonts.")
     if (cfg.source === "emoji" && !cfg.emoji.trim()) return setFormError("Pick an emoji for your icon.")
     if (cfg.source === "image" && !cfg.image) return setFormError("Choose an image for your icon.")
     setFormError(null)
@@ -349,9 +448,13 @@ export default function FaviconTool() {
       if (cfg.source === "text") {
         body.append("text", cfg.text.trim())
         body.append("shape", cfg.textShape)
-        body.append("font_family", cfg.font.trim() || "Roboto")
-        body.append("font_weight", String(cfg.weight))
-        body.append("italic", String(cfg.italic))
+        if (usingUploadedFont && cfg.fontFile) {
+          body.append("font_file", cfg.fontFile)
+        } else {
+          body.append("font_family", cfg.font.trim() || "Roboto")
+          body.append("font_weight", String(cfg.weight))
+          body.append("italic", String(cfg.italic))
+        }
         body.append("font_size", String(cfg.fontSize))
         body.append("font_color", cfg.fontColor)
         body.append("background_color", cfg.textBg)
@@ -402,7 +505,7 @@ export default function FaviconTool() {
           task.status !== "finished" && (
             <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
               <div className="grid place-items-center w-11 h-11 rounded-xl bg-checker overflow-hidden">
-                <IconArt cfg={cfg} size={36} imageUrl={imageUrl} />
+                <IconArt cfg={previewCfg} size={36} imageUrl={imageUrl} />
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{appTitle}</p>
@@ -520,7 +623,7 @@ export default function FaviconTool() {
             className={`grid place-items-center aspect-square rounded-2xl ring-1 ring-inset p-6 transition-colors duration-300 ${SURFACE[previewTheme]}`}
           >
             <div key={`${cfg.source}-${previewTheme}`} className="animate-pop-in">
-              <IconArt cfg={cfg} size={128} variant={previewTheme} imageUrl={imageUrl} />
+              <IconArt cfg={previewCfg} size={128} variant={previewTheme} imageUrl={imageUrl} />
             </div>
           </div>
           <div
@@ -528,13 +631,13 @@ export default function FaviconTool() {
           >
             {[48, 32, 16].map((s) => (
               <div key={s} className="flex flex-col items-center gap-1.5">
-                <IconArt cfg={cfg} size={s} variant={previewTheme} imageUrl={imageUrl} />
+                <IconArt cfg={previewCfg} size={s} variant={previewTheme} imageUrl={imageUrl} />
                 <span className="text-[10px] font-mono text-zinc-500">{s}px</span>
               </div>
             ))}
           </div>
-          <BrowserTab theme="light" title={appTitle} icon={<IconArt cfg={cfg} size={16} imageUrl={imageUrl} />} />
-          <BrowserTab theme="dark" title={appTitle} icon={<IconArt cfg={cfg} size={16} variant="dark" imageUrl={imageUrl} />} />
+          <BrowserTab theme="light" title={appTitle} icon={<IconArt cfg={previewCfg} size={16} imageUrl={imageUrl} />} />
+          <BrowserTab theme="dark" title={appTitle} icon={<IconArt cfg={previewCfg} size={16} variant="dark" imageUrl={imageUrl} />} />
           {previewTheme === "dark" && canDark && !showDark && (
             <p className="animate-fade-up text-[11px] text-zinc-400 text-center">
               Same colors as light mode.{" "}
@@ -579,54 +682,116 @@ export default function FaviconTool() {
                 />
               </Field>
 
-              <div className="grid grid-cols-[minmax(0,1fr)_110px] gap-3">
-                <Field label="Font" htmlFor="fav-font">
-                  <input
-                    id="fav-font"
-                    list="fav-fonts"
-                    value={cfg.font}
-                    onChange={(e) => set("font", e.target.value)}
-                    placeholder="Any Google Font"
-                    className={inputClass}
-                  />
-                  <datalist id="fav-fonts">
-                    {options.suggested_fonts.map((f) => (
-                      <option key={f} value={f} />
-                    ))}
-                  </datalist>
-                </Field>
-                <Field label="Weight" htmlFor="fav-weight">
-                  <select
-                    id="fav-weight"
-                    value={cfg.weight}
-                    onChange={(e) => set("weight", Number(e.target.value))}
-                    className={`${inputClass} appearance-none`}
-                  >
-                    {options.font_weights.map((w) => (
-                      <option key={w} value={w} className="bg-zinc-900">
-                        {w}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              </div>
-              <div className="flex flex-wrap gap-1.5 -mt-2">
-                {options.suggested_fonts.slice(0, 8).map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => set("font", f)}
-                    className={`px-2 py-1 rounded-md text-[11px] ring-1 ring-inset transition-colors ${
-                      cfg.font === f ? "bg-violet-500/15 ring-violet-400/50 text-violet-100" : "ring-white/10 text-zinc-500 hover:text-zinc-200"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
-              <Switch checked={cfg.italic} onChange={(v) => set("italic", v)} label="Italic" />
+              <Field label="Font">
+                <Segmented<FontSource>
+                  value={cfg.fontSource}
+                  onChange={(v) => {
+                    set("fontSource", v)
+                    setFormError(null)
+                  }}
+                  options={[
+                    { value: "google", label: "Google Fonts", icon: Type },
+                    { value: "upload", label: "Upload font", icon: Upload },
+                  ]}
+                />
+              </Field>
 
-              <Field label="Text size" htmlFor="fav-size" hint={`${cfg.fontSize}%`}>
+              {cfg.fontSource === "google" ? (
+                <div key="google-font" className="space-y-5 animate-fade-up">
+                  <div className="grid grid-cols-[minmax(0,1fr)_110px] gap-3">
+                    <Field label="Font" htmlFor="fav-font">
+                      <input
+                        id="fav-font"
+                        list="fav-fonts"
+                        value={cfg.font}
+                        onChange={(e) => set("font", e.target.value)}
+                        placeholder="Any Google Font"
+                        className={inputClass}
+                      />
+                      <datalist id="fav-fonts">
+                        {options.suggested_fonts.map((f) => (
+                          <option key={f} value={f} />
+                        ))}
+                      </datalist>
+                    </Field>
+                    <Field label="Weight" htmlFor="fav-weight">
+                      <select
+                        id="fav-weight"
+                        value={cfg.weight}
+                        onChange={(e) => set("weight", Number(e.target.value))}
+                        className={`${inputClass} appearance-none`}
+                      >
+                        {options.font_weights.map((w) => (
+                          <option key={w} value={w} className="bg-zinc-900">
+                            {w}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5 -mt-2">
+                    {options.suggested_fonts.slice(0, 8).map((f) => (
+                      <button
+                        key={f}
+                        type="button"
+                        onClick={() => set("font", f)}
+                        className={`px-2 py-1 rounded-md text-[11px] ring-1 ring-inset transition-colors ${
+                          cfg.font === f ? "bg-violet-500/15 ring-violet-400/50 text-violet-100" : "ring-white/10 text-zinc-500 hover:text-zinc-200"
+                        }`}
+                      >
+                        {f}
+                      </button>
+                    ))}
+                  </div>
+                  <Switch checked={cfg.italic} onChange={(v) => set("italic", v)} label="Italic" />
+                </div>
+              ) : (
+                <div key="upload-font" className="space-y-2 animate-fade-up">
+                  {cfg.fontFile ? (
+                    <SelectedFile
+                      file={cfg.fontFile}
+                      onRemove={() => set("fontFile", null)}
+                      aside={
+                        uploadedFamily && (
+                          <span className="hidden sm:inline text-lg text-zinc-200" style={{ fontFamily: `"${uploadedFamily}"` }}>
+                            Aa
+                          </span>
+                        )
+                      }
+                    />
+                  ) : (
+                    <Dropzone
+                      accept={options.font_file_formats}
+                      onFiles={(f) => selectFontFile(f[0])}
+                      icon={FileType}
+                      title="Drop your font here, or "
+                      hint={
+                        <p className="text-xs text-zinc-400">
+                          {options.font_file_formats.map((e) => `.${e}`).join(", ")} · up to {options.max_font_file_mb} MB
+                        </p>
+                      }
+                    />
+                  )}
+                  <p className="text-xs text-zinc-500">
+                    Weight and style come from the font file. Only use fonts you have the rights to — the file is used
+                    to draw your icon and isn&apos;t kept.
+                  </p>
+                </div>
+              )}
+
+              <Field
+                label="Text size"
+                htmlFor="fav-size"
+                hint={
+                  textCapped ? (
+                    <span className="text-amber-300/90" title="Larger sizes are shrunk so the text fits inside the icon">
+                      {cfg.fontSize}% · fits up to {Math.floor(maxTextPercent)}%
+                    </span>
+                  ) : (
+                    `${cfg.fontSize}%`
+                  )
+                }
+              >
                 <Slider id="fav-size" value={cfg.fontSize} onChange={(v) => set("fontSize", v)} min={10} max={100} />
               </Field>
 

@@ -41,6 +41,21 @@ const DEFAULT_OPTIONS: Options = {
 
 const SIZE_PRESETS = [256, 512, 1024, 2048]
 
+/** What each size suits, shown next to the size picker. */
+function sizeUse(size: number) {
+  if (size <= 256) return "Small · web & email"
+  if (size <= 512) return "Medium · screens & slides"
+  if (size <= 1024) return "Large · print"
+  return "Extra large · posters & banners"
+}
+
+/** Preview width (% of its box) for a size, so picking a size visibly changes the preview. */
+function previewWidth(size: number) {
+  const [min, max] = [256, 2048]
+  const t = Math.log2(Math.min(Math.max(size, min), max) / min) / Math.log2(max / min)
+  return 40 + 60 * t // 256px → 40%, 2048px → 100%
+}
+
 const LEVEL_HINT: Record<Level, string> = {
   L: "Smallest code · ~7% damage tolerance",
   M: "Balanced · ~15% damage tolerance",
@@ -108,7 +123,7 @@ function checkUrl(raw: string, maxLength: number): string | null {
 const GRID = 25
 
 /** Decorative QR-style pattern in the chosen colors — the real code is drawn on the server. */
-function StylePreview({ fg, bg, margin }: { fg: string; bg: string; margin: number }) {
+function StylePreview({ fg, bg, margin, size }: { fg: string; bg: string; margin: number; size: number }) {
   const cells = useMemo(() => {
     const finder = (x: number, y: number) =>
       [
@@ -130,8 +145,14 @@ function StylePreview({ fg, bg, margin }: { fg: string; bg: string; margin: numb
   const transparent = bg === "transparent"
 
   return (
-    <div className={`rounded-2xl p-4 ring-1 ring-inset ring-white/10 ${transparent ? "bg-checker" : "bg-white/[0.03]"}`}>
-      <svg viewBox={`${-margin} ${-margin} ${total} ${total}`} className="w-full h-auto rounded-lg" shapeRendering="crispEdges" aria-hidden>
+    <div className="grid place-items-center aspect-square rounded-2xl p-4 ring-1 ring-inset ring-white/10 bg-white/[0.03]">
+      <svg
+        viewBox={`${-margin} ${-margin} ${total} ${total}`}
+        className={`h-auto rounded-lg transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${transparent ? "bg-checker" : ""}`}
+        style={{ width: `${previewWidth(size)}%` }}
+        shapeRendering="crispEdges"
+        aria-hidden
+      >
         {!transparent && <rect x={-margin} y={-margin} width={total} height={total} fill={bg} />}
         {[
           [0, 0],
@@ -185,6 +206,8 @@ export default function QrTool() {
   const [cfg, setCfg] = useState<Config>(DEFAULT_CONFIG)
   const [options, setOptions] = useState<Options>(DEFAULT_OPTIONS)
   const [formError, setFormError] = useState<string | null>(null)
+  // Real pixel size of the generated PNG, read from the image itself
+  const [pngSize, setPngSize] = useState<number | null>(null)
 
   const set = <K extends keyof Config>(key: K, value: Config[K]) => setCfg((c) => ({ ...c, [key]: value }))
 
@@ -202,6 +225,7 @@ export default function QrTool() {
     const err = checkUrl(cfg.url, options.max_url_length)
     setFormError(err)
     if (err) return
+    setPngSize(null)
 
     task.run(async (ctx): Promise<Result> => {
       const body = new FormData()
@@ -296,9 +320,17 @@ export default function QrTool() {
                   src={`${API_URL}${result.files[0].download_url}`}
                   alt={`QR code for ${result.encoded_url}`}
                   className="w-full h-auto rounded-lg [image-rendering:pixelated]"
+                  onLoad={(e) => setPngSize(e.currentTarget.naturalWidth)}
                 />
               </div>
-              <p className="text-[11px] text-center text-zinc-500">Point your phone camera at it to test</p>
+              <div className="text-center space-y-0.5">
+                <p className="text-xs font-mono text-zinc-300">
+                  PNG: {pngSize ?? cfg.size}×{pngSize ?? cfg.size}px
+                </p>
+                <p className="text-[11px] text-zinc-500">
+                  Shown scaled to fit · point your phone camera at it to test
+                </p>
+              </div>
             </div>
 
             <div className="space-y-4 min-w-0">
@@ -349,7 +381,10 @@ export default function QrTool() {
         <aside className="order-2 space-y-3">
           <div className="md:sticky md:top-6 space-y-3 max-w-[220px] mx-auto md:max-w-none">
             <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Style preview</span>
-            <StylePreview fg={cfg.fg} bg={cfg.bg} margin={cfg.margin} />
+            <StylePreview fg={cfg.fg} bg={cfg.bg} margin={cfg.margin} size={cfg.size} />
+            <p className="text-center text-xs font-mono text-zinc-400">
+              {cfg.size}×{cfg.size}px
+            </p>
             <p className="text-[11px] text-center text-zinc-600">Shows your colors and margin — the real code is generated on the server.</p>
           </div>
         </aside>
@@ -409,7 +444,7 @@ export default function QrTool() {
               </Field>
             </div>
 
-            <Field label="Size" hint={`${cfg.size}×${cfg.size}px`}>
+            <Field label="Size" hint={`${cfg.size}×${cfg.size}px · ${sizeUse(cfg.size)}`}>
               <Segmented<string>
                 value={String(cfg.size)}
                 onChange={(v) => set("size", Number(v))}
