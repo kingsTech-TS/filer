@@ -7,6 +7,7 @@ import ZipTool from "@/components/tools/zip-tool"
 import UnzipTool from "@/components/tools/unzip-tool"
 import FaviconTool from "@/components/tools/favicon-tool"
 import QrTool from "@/components/tools/qr-tool"
+import ThemeToggle from "@/components/theme-toggle"
 import { TOOLS, type ToolId } from "@/lib/tools"
 
 export default function Home() {
@@ -18,7 +19,7 @@ export default function Home() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[oklch(0.11_0.015_270)] text-zinc-100">
+    <div className="relative min-h-screen overflow-hidden bg-page text-fg">
       {/* Background */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="absolute -top-40 left-1/2 -translate-x-[70%] w-[38rem] h-[38rem] rounded-full bg-indigo-600/25 blur-[120px] animate-blob" />
@@ -38,13 +39,16 @@ export default function Home() {
           </div>
           <span className="text-lg font-semibold tracking-tight">Filer</span>
         </div>
-        <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-zinc-400 bg-white/5 ring-1 ring-inset ring-white/10">
-          <span className="relative flex w-2 h-2">
-            <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
-            <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-400" />
+        <div className="flex items-center gap-2">
+          <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs text-fg-muted bg-tint/5 ring-1 ring-inset ring-tint/10">
+            <span className="relative flex w-2 h-2">
+              <span className="absolute inline-flex w-full h-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+              <span className="relative inline-flex w-2 h-2 rounded-full bg-emerald-400" />
+            </span>
+            Free · No sign-up
           </span>
-          Free · No sign-up
-        </span>
+          <ThemeToggle />
+        </div>
       </header>
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pt-8 sm:pt-14 pb-20">
@@ -57,7 +61,7 @@ export default function Home() {
               One place.
             </span>
           </h1>
-          <p className="mt-5 text-base sm:text-lg text-zinc-400">
+          <p className="mt-5 text-base sm:text-lg text-fg-muted">
             Convert documents, media and spreadsheets, remove photo backgrounds, zip and unzip files, generate
             favicons, and turn links into QR codes — in seconds.
           </p>
@@ -67,7 +71,7 @@ export default function Home() {
         <nav
           id="tools"
           aria-label="Tools"
-          className="mx-auto mt-10 sm:mt-12 flex max-w-full w-fit gap-1 overflow-x-auto rounded-2xl p-1.5 bg-white/[0.04] ring-1 ring-inset ring-white/10 backdrop-blur animate-fade-up [animation-delay:80ms] [scrollbar-width:none] scroll-mt-6"
+          className="mx-auto mt-10 sm:mt-12 flex max-w-full w-fit gap-1 overflow-x-auto rounded-2xl p-1.5 bg-tint/[0.04] ring-1 ring-inset ring-tint/10 backdrop-blur animate-fade-up [animation-delay:80ms] [scrollbar-width:none] scroll-mt-6"
         >
           {TOOLS.map(({ id, label, icon: Icon }) => {
             const active = id === tool
@@ -79,7 +83,7 @@ export default function Home() {
                 className={`relative shrink-0 inline-flex items-center gap-2 h-10 px-4 rounded-xl text-sm font-medium transition-all duration-300 ${
                   active
                     ? "text-white bg-gradient-to-r from-indigo-500 to-violet-500 shadow-lg shadow-violet-500/30"
-                    : "text-zinc-400 hover:text-zinc-100 hover:bg-white/5"
+                    : "text-fg-muted hover:text-fg hover:bg-tint/5"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -95,8 +99,8 @@ export default function Home() {
             tool === "favicon" || tool === "qr" ? "max-w-3xl" : "max-w-lg"
           }`}
         >
-          <div aria-hidden className="absolute -inset-px rounded-[28px] bg-gradient-to-b from-white/20 via-white/5 to-transparent" />
-          <div className="relative rounded-[28px] bg-zinc-950/60 backdrop-blur-2xl p-5 sm:p-7 shadow-2xl shadow-black/40">
+          <div aria-hidden className="absolute -inset-px rounded-[28px] bg-gradient-to-b from-black/10 via-black/[0.03] to-transparent dark:from-tint/20 dark:via-tint/5" />
+          <div className="relative rounded-[28px] bg-panel backdrop-blur-2xl p-5 sm:p-7 shadow-2xl shadow-black/10 dark:shadow-black/40">
             <div key={tool} className="animate-fade-up">
               {tool === "convert" && <ConvertTool mode="convert" />}
               {tool === "remove-bg" && <ConvertTool mode="remove-bg" />}
@@ -109,7 +113,7 @@ export default function Home() {
         </div>
 
         {/* Trust row */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-zinc-500 animate-fade-up [animation-delay:200ms]">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-fg-subtle animate-fade-up [animation-delay:200ms]">
           <span className="inline-flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5" /> Secure uploads
           </span>
@@ -130,20 +134,20 @@ export default function Home() {
               className={`group text-left rounded-2xl p-5 ring-1 ring-inset transition-all ${
                 id === tool
                   ? "bg-violet-500/[0.08] ring-violet-400/30"
-                  : "bg-white/[0.03] ring-white/[0.07] hover:bg-white/[0.05] hover:ring-white/15"
+                  : "bg-tint/[0.03] ring-tint/[0.07] hover:bg-tint/[0.05] hover:ring-tint/15"
               }`}
             >
-              <div className="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 ring-1 ring-inset ring-white/10 transition-transform group-hover:-translate-y-0.5">
+              <div className="grid place-items-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 ring-1 ring-inset ring-tint/10 transition-transform group-hover:-translate-y-0.5">
                 <Icon className="w-5 h-5 text-violet-300" />
               </div>
               <h3 className="mt-4 text-sm font-semibold">{label === "Remove BG" ? "Remove background" : label}</h3>
-              <p className="mt-1 text-sm text-zinc-500">{description}</p>
+              <p className="mt-1 text-sm text-fg-subtle">{description}</p>
             </button>
           ))}
         </section>
       </main>
 
-      <footer className="relative z-10 border-t border-white/5 py-6 text-center text-xs text-zinc-600">
+      <footer className="relative z-10 border-t border-tint/5 py-6 text-center text-xs text-fg-faint">
         © {new Date().getFullYear()} Filer
       </footer>
     </div>

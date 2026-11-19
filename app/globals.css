@@ -117,6 +117,104 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ---------- Filer theme tokens ----------
+   Neutral colors used by the app's own UI. Light values are the default;
+   `.dark` (set on <html> by next-themes) switches them.
+   - fg … fg-faint: text, strongest to weakest
+   - tint: the color see-through overlays are mixed from (bg-tint/[0.04], ring-tint/10)
+*/
+:root {
+  color-scheme: light;
+  --filer-page: oklch(0.985 0.004 270);
+  --filer-panel: oklch(1 0 0 / 0.78);
+  --filer-sunken: oklch(96.7% 0.001 286.375);
+  --filer-fg: oklch(21% 0.006 285.885);
+  --filer-fg-2: oklch(27.4% 0.006 286.033);
+  --filer-fg-3: oklch(37% 0.013 285.805);
+  --filer-fg-muted: oklch(44.2% 0.017 285.786);
+  --filer-fg-subtle: oklch(55.2% 0.016 285.938);
+  --filer-fg-faint: oklch(70.5% 0.015 286.067);
+  --filer-tint: oklch(14.1% 0.005 285.823);
+  --filer-checker-a: oklch(0.96 0 0);
+  --filer-checker-b: oklch(0.9 0 0);
+}
+
+.dark {
+  color-scheme: dark;
+  --filer-page: oklch(0.11 0.015 270);
+  --filer-panel: oklch(14.1% 0.005 285.823 / 0.6);
+  --filer-sunken: oklch(21% 0.006 285.885);
+  --filer-fg: oklch(96.7% 0.001 286.375);
+  --filer-fg-2: oklch(92% 0.004 286.32);
+  --filer-fg-3: oklch(87.1% 0.006 286.286);
+  --filer-fg-muted: oklch(70.5% 0.015 286.067);
+  --filer-fg-subtle: oklch(55.2% 0.016 285.938);
+  --filer-fg-faint: oklch(44.2% 0.017 285.786);
+  --filer-tint: oklch(1 0 0);
+  --filer-checker-a: oklch(0.22 0 0);
+  --filer-checker-b: oklch(0.28 0 0);
+}
+
+@theme inline {
+  --color-page: var(--filer-page);
+  --color-panel: var(--filer-panel);
+  --color-sunken: var(--filer-sunken);
+  --color-fg: var(--filer-fg);
+  --color-fg-2: var(--filer-fg-2);
+  --color-fg-3: var(--filer-fg-3);
+  --color-fg-muted: var(--filer-fg-muted);
+  --color-fg-subtle: var(--filer-fg-subtle);
+  --color-fg-faint: var(--filer-fg-faint);
+  --color-tint: var(--filer-tint);
+}
+
+/* Pale accent shades (100–300) are used for colored text and icons on the dark UI.
+   In light mode they'd be unreadable, so they're swapped for deep shades (700–800). */
+:root:not(.dark) {
+  --color-violet-100: oklch(43.2% 0.232 292.759);
+  --color-violet-200: oklch(49.1% 0.27 292.581);
+  --color-violet-300: oklch(49.1% 0.27 292.581);
+  --color-indigo-100: oklch(39.8% 0.195 277.366);
+  --color-indigo-200: oklch(45.7% 0.24 277.023);
+  --color-indigo-300: oklch(45.7% 0.24 277.023);
+  --color-fuchsia-100: oklch(45.2% 0.211 324.591);
+  --color-fuchsia-200: oklch(51.8% 0.253 323.949);
+  --color-fuchsia-300: oklch(51.8% 0.253 323.949);
+  --color-purple-100: oklch(43.8% 0.218 303.724);
+  --color-purple-200: oklch(49.6% 0.265 301.924);
+  --color-purple-300: oklch(49.6% 0.265 301.924);
+  --color-emerald-100: oklch(43.2% 0.095 166.913);
+  --color-emerald-200: oklch(50.8% 0.118 165.612);
+  --color-emerald-300: oklch(50.8% 0.118 165.612);
+  --color-teal-100: oklch(43.7% 0.078 188.216);
+  --color-teal-200: oklch(51.1% 0.096 186.391);
+  --color-teal-300: oklch(51.1% 0.096 186.391);
+  --color-green-100: oklch(44.8% 0.119 151.328);
+  --color-green-200: oklch(52.7% 0.154 150.069);
+  --color-green-300: oklch(52.7% 0.154 150.069);
+  --color-rose-100: oklch(45.5% 0.188 13.697);
+  --color-rose-200: oklch(51.4% 0.222 16.935);
+  --color-rose-300: oklch(51.4% 0.222 16.935);
+  --color-red-100: oklch(44.4% 0.177 26.899);
+  --color-red-200: oklch(50.5% 0.213 27.518);
+  --color-red-300: oklch(50.5% 0.213 27.518);
+  --color-amber-100: oklch(47.3% 0.137 46.201);
+  --color-amber-200: oklch(55.5% 0.163 48.998);
+  --color-amber-300: oklch(55.5% 0.163 48.998);
+  --color-orange-100: oklch(47% 0.157 37.304);
+  --color-orange-200: oklch(55.3% 0.195 38.402);
+  --color-orange-300: oklch(55.3% 0.195 38.402);
+  --color-yellow-100: oklch(47.6% 0.114 61.907);
+  --color-yellow-200: oklch(55.4% 0.135 66.442);
+  --color-yellow-300: oklch(55.4% 0.135 66.442);
+  --color-sky-100: oklch(44.3% 0.11 240.79);
+  --color-sky-200: oklch(50% 0.134 242.749);
+  --color-sky-300: oklch(50% 0.134 242.749);
+  --color-cyan-100: oklch(45% 0.085 224.283);
+  --color-cyan-200: oklch(52% 0.105 223.128);
+  --color-cyan-300: oklch(52% 0.105 223.128);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -158,19 +256,19 @@
 
 .bg-grid {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 0.04) 1px, transparent 1px);
+    linear-gradient(to right, color-mix(in oklab, var(--filer-tint) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklab, var(--filer-tint) 5%, transparent) 1px, transparent 1px);
   background-size: 44px 44px;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 40%, transparent 100%);
 }
 
 .bg-checker {
-  background-color: oklch(0.22 0 0);
+  background-color: var(--filer-checker-a);
   background-image:
-    linear-gradient(45deg, oklch(0.28 0 0) 25%, transparent 25%),
-    linear-gradient(-45deg, oklch(0.28 0 0) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, oklch(0.28 0 0) 75%),
-    linear-gradient(-45deg, transparent 75%, oklch(0.28 0 0) 75%);
+    linear-gradient(45deg, var(--filer-checker-b) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--filer-checker-b) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--filer-checker-b) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--filer-checker-b) 75%);
   background-size: 16px 16px;
   background-position: 0 0, 0 8px, 8px -8px, -8px 0;
 }

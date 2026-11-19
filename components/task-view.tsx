@@ -52,7 +52,7 @@ export default function TaskView({
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold tracking-tight">{title?.[status] ?? copy.title}</h2>
-          <p className="text-sm text-zinc-400 mt-0.5">{copy.subtitle}</p>
+          <p className="text-sm text-fg-muted mt-0.5">{copy.subtitle}</p>
         </div>
         <StatusBadge status={status} />
       </div>
@@ -86,7 +86,7 @@ export function SuccessMark({ label }: { label?: React.ReactNode }) {
           <path d="M20 6 9 17l-5-5" />
         </svg>
       </div>
-      {label && <div className="mt-4 max-w-full text-center text-sm text-zinc-300">{label}</div>}
+      {label && <div className="mt-4 max-w-full text-center text-sm text-fg-3">{label}</div>}
     </div>
   )
 }

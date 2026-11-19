@@ -79,16 +79,16 @@ export default function UnzipTool() {
         summary={file && task.status !== "finished" && <SelectedFile file={file} />}
       >
         <div className="space-y-4">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
+          <div className="flex items-center justify-between text-xs text-fg-subtle">
             <span className="truncate">
-              From <span className="text-zinc-300">{file?.name}</span>
+              From <span className="text-fg-3">{file?.name}</span>
             </span>
             <span className="shrink-0">{formatSize(total)} total</span>
           </div>
 
           {files.length > 8 && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-subtle" />
               <input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -104,13 +104,13 @@ export default function UnzipTool() {
               return (
                 <li
                   key={f.index}
-                  className="animate-fade-up flex items-center gap-3 px-2.5 py-2 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.07] hover:bg-white/[0.06] transition-colors"
+                  className="animate-fade-up flex items-center gap-3 px-2.5 py-2 rounded-xl bg-tint/[0.03] ring-1 ring-inset ring-tint/[0.07] hover:bg-tint/[0.06] transition-colors"
                   style={{ animationDelay: `${Math.min(i, 12) * 40}ms` }}
                 >
                   <FileBadge ext={getExtension(f.name)} size="sm" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm text-zinc-100">{f.name}</p>
-                    <p className="truncate text-xs text-zinc-500">
+                    <p className="truncate text-sm text-fg">{f.name}</p>
+                    <p className="truncate text-xs text-fg-subtle">
                       {folder && <span className="font-mono">{folder}/ · </span>}
                       {formatSize(f.size)}
                     </p>
@@ -119,7 +119,7 @@ export default function UnzipTool() {
                 </li>
               )
             })}
-            {visible.length === 0 && <p className="py-4 text-center text-sm text-zinc-500">No files match “{filter}”.</p>}
+            {visible.length === 0 && <p className="py-4 text-center text-sm text-fg-subtle">No files match “{filter}”.</p>}
           </ul>
 
           <SecondaryButton onClick={startOver} icon={RotateCcw}>

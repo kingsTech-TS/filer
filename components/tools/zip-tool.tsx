@@ -91,12 +91,12 @@ export default function ZipTool() {
         onRetry={task.reset}
         title={{ uploading: `Uploading ${files.length} file${files.length === 1 ? "" : "s"}`, finished: "Your zip is ready" }}
         summary={
-          <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+          <div className="flex items-center gap-3 p-3 rounded-2xl bg-tint/[0.04] ring-1 ring-inset ring-tint/10">
             <div className="flex -space-x-2">
               {files.slice(0, 3).map((f) => (
                 <span
                   key={fileKey(f)}
-                  className="grid place-items-center w-9 h-9 rounded-lg bg-zinc-900 ring-2 ring-zinc-950 text-[9px] font-mono uppercase text-zinc-400"
+                  className="grid place-items-center w-9 h-9 rounded-lg bg-sunken ring-2 ring-page text-[9px] font-mono uppercase text-fg-muted"
                 >
                   {f.name.split(".").pop()?.slice(0, 4)}
                 </span>
@@ -106,9 +106,9 @@ export default function ZipTool() {
               <p className="text-sm font-medium">
                 {files.length} file{files.length === 1 ? "" : "s"}
               </p>
-              <p className="text-xs text-zinc-500 mt-0.5">{formatSize(totalSize)}</p>
+              <p className="text-xs text-fg-subtle mt-0.5">{formatSize(totalSize)}</p>
             </div>
-            <ArrowRight className="w-4 h-4 text-zinc-500" />
+            <ArrowRight className="w-4 h-4 text-fg-subtle" />
             <span className="max-w-[40%] truncate px-2 py-1 rounded-md text-[11px] font-mono font-semibold text-amber-100 bg-amber-500/15 ring-1 ring-inset ring-amber-400/30">
               {downloadName}
             </span>
@@ -121,7 +121,7 @@ export default function ZipTool() {
               label={
                 <>
                   <span className="block truncate font-mono">{task.result.downloadName}</span>
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-fg-subtle">
                     {task.result.fileCount} file{task.result.fileCount === 1 ? "" : "s"} compressed
                   </span>
                 </>
@@ -140,12 +140,12 @@ export default function ZipTool() {
   return (
     <div className="space-y-5">
       {files.length === 0 ? (
-        <Dropzone accept={null} multiple onFiles={addFiles} hint={<p className="text-xs text-zinc-400">Any file type · up to {MAX_ZIP_FILES} files</p>} />
+        <Dropzone accept={null} multiple onFiles={addFiles} hint={<p className="text-xs text-fg-muted">Any file type · up to {MAX_ZIP_FILES} files</p>} />
       ) : (
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs text-zinc-500">
+          <div className="flex items-center justify-between text-xs text-fg-subtle">
             <span>
-              <span className="text-zinc-200 font-medium">{files.length}</span> / {MAX_ZIP_FILES} files ·{" "}
+              <span className="text-fg-2 font-medium">{files.length}</span> / {MAX_ZIP_FILES} files ·{" "}
               {formatSize(totalSize)}
             </span>
             <button onClick={() => setFiles([])} className="hover:text-rose-300 transition-colors">
@@ -188,7 +188,7 @@ export default function ZipTool() {
                 placeholder={getStem(downloadName)}
                 className={`${inputClass} pr-12`}
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-mono text-zinc-500">.zip</span>
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm font-mono text-fg-subtle">.zip</span>
             </div>
           </Field>
 

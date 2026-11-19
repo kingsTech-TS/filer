@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { Check, Copy, TriangleAlert, type LucideIcon } from "lucide-react"
 
 export const inputClass =
-  "w-full h-10 px-3 rounded-lg text-sm text-zinc-100 placeholder:text-zinc-600 bg-white/[0.04] ring-1 ring-inset ring-white/10 focus:outline-none focus:ring-2 focus:ring-violet-400/60 transition-shadow disabled:opacity-50"
+  "w-full h-10 px-3 rounded-lg text-sm text-fg placeholder:text-fg-faint bg-tint/[0.04] ring-1 ring-inset ring-tint/10 focus:outline-none focus:ring-2 focus:ring-violet-400/60 transition-shadow disabled:opacity-50"
 
 export function Field({
   label,
@@ -21,10 +21,10 @@ export function Field({
   return (
     <div className="space-y-2">
       <div className="flex items-baseline justify-between gap-2">
-        <label htmlFor={htmlFor} className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+        <label htmlFor={htmlFor} className="text-xs font-medium uppercase tracking-wider text-fg-subtle">
           {label}
         </label>
-        {hint && <span className="text-xs text-zinc-500 tabular-nums">{hint}</span>}
+        {hint && <span className="text-xs text-fg-subtle tabular-nums">{hint}</span>}
       </div>
       {children}
     </div>
@@ -49,12 +49,12 @@ export function Segmented<T extends string>({
 
   return (
     <div
-      className="relative grid p-1 rounded-xl bg-white/[0.04] ring-1 ring-inset ring-white/10"
+      className="relative grid p-1 rounded-xl bg-tint/[0.04] ring-1 ring-inset ring-tint/10"
       style={{ gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }}
     >
       <div
         aria-hidden
-        className="absolute top-1 bottom-1 left-1 rounded-lg bg-white/10 ring-1 ring-inset ring-white/15 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
+        className="absolute top-1 bottom-1 left-1 rounded-lg bg-tint/10 ring-1 ring-inset ring-tint/15 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
         style={{ width: `calc((100% - 8px) / ${options.length})`, transform: `translateX(${index * 100}%)` }}
       />
       {options.map(({ value: v, label, icon: Icon }) => (
@@ -65,7 +65,7 @@ export function Segmented<T extends string>({
           disabled={disabled}
           aria-pressed={v === value}
           className={`relative z-10 inline-flex items-center justify-center gap-1.5 h-8 text-xs font-medium rounded-lg transition-colors ${
-            v === value ? "text-white" : "text-zinc-400 hover:text-zinc-200"
+            v === value ? "text-fg" : "text-fg-muted hover:text-fg-2"
           }`}
         >
           {Icon && <Icon className="w-3.5 h-3.5" />}
@@ -106,7 +106,7 @@ export function Slider({
       onChange={(e) => onChange(Number(e.target.value))}
       className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-violet-400 disabled:opacity-50"
       style={{
-        background: `linear-gradient(to right, #a78bfa ${pct}%, rgb(255 255 255 / 0.1) ${pct}%)`,
+        background: `linear-gradient(to right, #a78bfa ${pct}%, color-mix(in oklab, var(--color-tint) 10%, transparent) ${pct}%)`,
       }}
     />
   )
@@ -130,11 +130,11 @@ export function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className="group inline-flex items-center gap-2.5 text-sm text-zinc-300 hover:text-white transition-colors disabled:opacity-50"
+      className="group inline-flex items-center gap-2.5 text-sm text-fg-3 hover:text-fg transition-colors disabled:opacity-50"
     >
       <span
         className={`relative w-9 h-5 rounded-full transition-colors duration-300 ${
-          checked ? "bg-violet-500" : "bg-white/10 ring-1 ring-inset ring-white/10"
+          checked ? "bg-violet-500" : "bg-tint/10 ring-1 ring-inset ring-tint/10"
         }`}
       >
         <span
@@ -168,7 +168,7 @@ export function ColorField({
   return (
     <div className="flex items-center gap-2">
       <label
-        className={`relative shrink-0 w-10 h-10 rounded-lg overflow-hidden ring-1 ring-inset ring-white/15 cursor-pointer ${
+        className={`relative shrink-0 w-10 h-10 rounded-lg overflow-hidden ring-1 ring-inset ring-tint/15 cursor-pointer ${
           transparent ? "bg-checker" : ""
         }`}
         style={transparent ? undefined : { backgroundColor: value }}
@@ -200,7 +200,7 @@ export function ColorField({
           className={`shrink-0 h-10 px-3 rounded-lg text-xs font-medium ring-1 ring-inset transition-colors ${
             transparent
               ? "bg-violet-500/20 ring-violet-400/50 text-violet-100"
-              : "bg-white/[0.04] ring-white/10 text-zinc-400 hover:text-zinc-100"
+              : "bg-tint/[0.04] ring-tint/10 text-fg-muted hover:text-fg"
           }`}
         >
           None
@@ -234,7 +234,7 @@ export function CopyButton({ text, label = "Copy" }: { text: string; label?: str
         }
       }}
       className={`shrink-0 inline-flex items-center gap-1.5 h-7 px-2.5 rounded-md text-xs font-medium transition-colors ${
-        copied ? "bg-emerald-500/20 text-emerald-300" : "bg-white/10 text-zinc-300 hover:bg-white/15 hover:text-white"
+        copied ? "bg-emerald-500/20 text-emerald-300" : "bg-tint/10 text-fg-3 hover:bg-tint/15 hover:text-fg"
       }`}
     >
       {copied ? <Check className="w-3.5 h-3.5 animate-pop-in" /> : <Copy className="w-3.5 h-3.5" />}
@@ -276,7 +276,7 @@ export function SecondaryButton({
   return (
     <button
       {...props}
-      className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-medium text-zinc-300 bg-white/[0.04] ring-1 ring-inset ring-white/10 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-50"
+      className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-medium text-fg-3 bg-tint/[0.04] ring-1 ring-inset ring-tint/10 hover:bg-tint/[0.08] hover:text-fg transition-colors disabled:opacity-50"
     >
       {Icon && <Icon className="w-4 h-4" />}
       {children}

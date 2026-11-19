@@ -86,12 +86,12 @@ export function DownloadIconButton({ path, fileName }: { path: string; fileName:
           ? "bg-emerald-500/20 text-emerald-300"
           : error
             ? "bg-rose-500/15 text-rose-300"
-            : "text-zinc-400 hover:text-white hover:bg-white/10"
+            : "text-fg-muted hover:text-fg hover:bg-tint/10"
       }`}
     >
       {downloading && (
         <svg viewBox="0 0 32 32" className={`absolute inset-0 -rotate-90 ${progress === null ? "animate-spin" : ""}`}>
-          <circle cx="16" cy="16" r={R} fill="none" stroke="white" strokeOpacity={0.1} strokeWidth={2.5} />
+          <circle cx="16" cy="16" r={R} fill="none" className="stroke-tint" strokeOpacity={0.1} strokeWidth={2.5} />
           <circle
             cx="16"
             cy="16"

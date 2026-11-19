@@ -30,12 +30,12 @@ export default function ResultPreview({ jobId }: { jobId: string }) {
   if (failed) return null
 
   return (
-    <div className="animate-fade-up relative overflow-hidden rounded-2xl bg-checker ring-1 ring-white/10 aspect-[4/3] grid place-items-center">
+    <div className="animate-fade-up relative overflow-hidden rounded-2xl bg-checker ring-1 ring-tint/10 aspect-[4/3] grid place-items-center">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt="Background removed result" className="max-h-full max-w-full object-contain p-3" />
       ) : (
-        <div className="absolute inset-0 bg-white/5 animate-pulse" />
+        <div className="absolute inset-0 bg-tint/5 animate-pulse" />
       )}
     </div>
   )

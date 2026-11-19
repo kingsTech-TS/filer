@@ -45,6 +45,7 @@ All tools share:
 - **Animated stages.** Each tool has its own loader and an Upload → Process → Download step tracker.
 - **Checks before uploading.** Unsupported file types and files over 25 MB are rejected in the browser, and the backend's own error messages are shown when something fails.
 - **Reduced motion.** Animations turn off when the user's system asks for reduced motion.
+- **Light and dark themes.** First-time visitors get their device's theme; the switch in the header changes it and remembers the choice.
 
 ## Tech stack
 

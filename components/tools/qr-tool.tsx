@@ -145,7 +145,7 @@ function StylePreview({ fg, bg, margin, size }: { fg: string; bg: string; margin
   const transparent = bg === "transparent"
 
   return (
-    <div className="grid place-items-center aspect-square rounded-2xl p-4 ring-1 ring-inset ring-white/10 bg-white/[0.03]">
+    <div className="grid place-items-center aspect-square rounded-2xl p-4 ring-1 ring-inset ring-tint/10 bg-tint/[0.03]">
       <svg
         viewBox={`${-margin} ${-margin} ${total} ${total}`}
         className={`h-auto rounded-lg transition-[width] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${transparent ? "bg-checker" : ""}`}
@@ -176,11 +176,11 @@ function LinkRow({ label, href, accent = false }: { label: string; href: string;
   return (
     <div
       className={`space-y-1.5 rounded-xl p-3 ring-1 ring-inset ${
-        accent ? "bg-violet-500/[0.08] ring-violet-400/30" : "bg-white/[0.03] ring-white/[0.07]"
+        accent ? "bg-violet-500/[0.08] ring-violet-400/30" : "bg-tint/[0.03] ring-tint/[0.07]"
       }`}
     >
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</span>
+        <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">{label}</span>
         <div className="flex items-center gap-1.5">
           <a
             href={href}
@@ -188,14 +188,14 @@ function LinkRow({ label, href, accent = false }: { label: string; href: string;
             rel="noopener noreferrer"
             title="Open link"
             aria-label={`Open ${label.toLowerCase()}`}
-            className="grid place-items-center w-7 h-7 rounded-md text-zinc-400 hover:text-white hover:bg-white/10 transition-colors"
+            className="grid place-items-center w-7 h-7 rounded-md text-fg-muted hover:text-fg hover:bg-tint/10 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
           <CopyButton text={href} />
         </div>
       </div>
-      <p className={`break-all font-mono text-sm ${accent ? "text-violet-100" : "text-zinc-300"}`}>{href}</p>
+      <p className={`break-all font-mono text-sm ${accent ? "text-violet-100" : "text-fg-3"}`}>{href}</p>
     </div>
   )
 }
@@ -272,13 +272,13 @@ export default function QrTool() {
         }}
         summary={
           task.status !== "finished" && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-tint/[0.04] ring-1 ring-inset ring-tint/10">
               <div className="grid place-items-center w-10 h-10 shrink-0 rounded-xl bg-violet-500/15 ring-1 ring-inset ring-violet-400/30">
                 {makesQr ? <QrCode className="w-5 h-5 text-violet-200" /> : <Scissors className="w-5 h-5 text-violet-200" />}
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate font-mono">{cfg.url.trim()}</p>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-fg-subtle">
                   {cfg.mode === "qr" ? "QR code" : cfg.mode === "qr-short" ? "Short link + QR code" : "Short link"}
                 </p>
               </div>
@@ -311,8 +311,8 @@ export default function QrTool() {
           <div className="grid gap-6 md:grid-cols-[240px_minmax(0,1fr)]">
             <div className="space-y-3">
               <div
-                className={`animate-pop-in rounded-2xl p-3 ring-1 ring-inset ring-white/10 ${
-                  cfg.bg === "transparent" ? "bg-checker" : "bg-white/[0.03]"
+                className={`animate-pop-in rounded-2xl p-3 ring-1 ring-inset ring-tint/10 ${
+                  cfg.bg === "transparent" ? "bg-checker" : "bg-tint/[0.03]"
                 }`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -324,10 +324,10 @@ export default function QrTool() {
                 />
               </div>
               <div className="text-center space-y-0.5">
-                <p className="text-xs font-mono text-zinc-300">
+                <p className="text-xs font-mono text-fg-3">
                   PNG: {pngSize ?? cfg.size}×{pngSize ?? cfg.size}px
                 </p>
-                <p className="text-[11px] text-zinc-500">
+                <p className="text-[11px] text-fg-subtle">
                   Shown scaled to fit · point your phone camera at it to test
                 </p>
               </div>
@@ -346,10 +346,10 @@ export default function QrTool() {
 
               <ul className="space-y-1.5">
                 {result.files.map((f) => (
-                  <li key={f.index} className="flex items-center gap-3 px-2.5 py-1.5 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.07]">
+                  <li key={f.index} className="flex items-center gap-3 px-2.5 py-1.5 rounded-xl bg-tint/[0.03] ring-1 ring-inset ring-tint/[0.07]">
                     <FileBadge ext={getExtension(f.name)} size="sm" />
-                    <span className="flex-1 truncate text-sm font-mono text-zinc-300">{f.name}</span>
-                    <span className="text-xs text-zinc-500">
+                    <span className="flex-1 truncate text-sm font-mono text-fg-3">{f.name}</span>
+                    <span className="text-xs text-fg-subtle">
                       {f.name.endsWith(".png") ? `${cfg.size}px · ` : "Scalable · "}
                       {formatSize(f.size)}
                     </span>
@@ -380,12 +380,12 @@ export default function QrTool() {
       {makesQr && (
         <aside className="order-2 space-y-3">
           <div className="md:sticky md:top-6 space-y-3 max-w-[220px] mx-auto md:max-w-none">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Style preview</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">Style preview</span>
             <StylePreview fg={cfg.fg} bg={cfg.bg} margin={cfg.margin} size={cfg.size} />
-            <p className="text-center text-xs font-mono text-zinc-400">
+            <p className="text-center text-xs font-mono text-fg-muted">
               {cfg.size}×{cfg.size}px
             </p>
-            <p className="text-[11px] text-center text-zinc-600">Shows your colors and margin — the real code is generated on the server.</p>
+            <p className="text-[11px] text-center text-fg-faint">Shows your colors and margin — the real code is generated on the server.</p>
           </div>
         </aside>
       )}
@@ -393,7 +393,7 @@ export default function QrTool() {
       <div className="order-1 space-y-5">
         <Field label="Link" htmlFor="qr-url">
           <div className="relative">
-            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <Link2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-subtle" />
             <input
               id="qr-url"
               type="url"
@@ -425,7 +425,7 @@ export default function QrTool() {
             ]}
           />
         </Field>
-        <p className="-mt-3 text-xs text-zinc-500">
+        <p className="-mt-3 text-xs text-fg-subtle">
           {cfg.mode === "qr"
             ? "The QR code opens your link exactly as entered."
             : cfg.mode === "qr-short"

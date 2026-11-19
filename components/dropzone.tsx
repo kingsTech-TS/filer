@@ -84,7 +84,7 @@ export default function Dropzone({
           className={`w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl border border-dashed text-sm transition-colors disabled:opacity-50 ${
             dragActive
               ? "border-violet-400/70 bg-violet-500/10 text-violet-200"
-              : "border-white/15 text-zinc-400 hover:border-violet-400/40 hover:text-zinc-200 hover:bg-white/[0.03]"
+              : "border-tint/15 text-fg-muted hover:border-violet-400/40 hover:text-fg-2 hover:bg-tint/[0.03]"
           }`}
         >
           <Plus className="w-4 h-4" />
@@ -105,7 +105,7 @@ export default function Dropzone({
         className={`group relative w-full overflow-hidden rounded-2xl border border-dashed px-6 py-10 text-center transition-all duration-300 disabled:opacity-50 ${
           dragActive
             ? "border-violet-400/70 bg-violet-500/10 scale-[1.01]"
-            : "border-white/15 bg-white/[0.02] hover:border-violet-400/40 hover:bg-white/[0.04]"
+            : "border-tint/15 bg-tint/[0.02] hover:border-violet-400/40 hover:bg-tint/[0.04]"
         }`}
       >
         <div
@@ -113,13 +113,13 @@ export default function Dropzone({
           className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(400px_circle_at_50%_0%,oklch(0.65_0.2_285/0.15),transparent_70%)]"
         />
         <div
-          className={`relative mx-auto mb-4 grid place-items-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 ring-1 ring-inset ring-white/10 transition-transform duration-300 ${
+          className={`relative mx-auto mb-4 grid place-items-center w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-fuchsia-500/20 ring-1 ring-inset ring-tint/10 transition-transform duration-300 ${
             dragActive ? "-translate-y-1 scale-110" : "group-hover:-translate-y-0.5"
           }`}
         >
           <Icon className="w-6 h-6 text-violet-300" />
         </div>
-        <p className="relative text-sm font-medium text-zinc-100">
+        <p className="relative text-sm font-medium text-fg">
           {dragActive ? (
             "Drop it like it's hot"
           ) : (
@@ -136,7 +136,7 @@ export default function Dropzone({
                 {accept.map((e) => (
                   <span
                     key={e}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-mono uppercase tracking-wide text-zinc-400 bg-white/5 ring-1 ring-inset ring-white/5"
+                    className="px-2 py-0.5 rounded-md text-[10px] font-mono uppercase tracking-wide text-fg-muted bg-tint/5 ring-1 ring-inset ring-tint/5"
                   >
                     {e}
                   </span>
@@ -144,7 +144,7 @@ export default function Dropzone({
               </div>
             ))}
         </div>
-        <p className="relative mt-3 text-xs text-zinc-500">
+        <p className="relative mt-3 text-xs text-fg-subtle">
           Up to {MAX_FILE_SIZE_MB} MB{multiple ? " per file" : ""}
         </p>
       </button>

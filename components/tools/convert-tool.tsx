@@ -166,14 +166,14 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
         title={{ finished: "Your file is ready", uploading: "Uploading your file" }}
         summary={
           file && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-tint/[0.04] ring-1 ring-inset ring-tint/10">
               <FileBadge ext={ext} />
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium">{file.name}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">{formatSize(file.size)}</p>
+                <p className="text-xs text-fg-subtle mt-0.5">{formatSize(file.size)}</p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                <ArrowRight className="w-4 h-4 text-zinc-500" />
+                <ArrowRight className="w-4 h-4 text-fg-subtle" />
                 <span className="px-2 py-1 rounded-md text-[11px] font-mono font-semibold uppercase text-violet-200 bg-violet-500/15 ring-1 ring-inset ring-violet-400/30">
                   {mode === "remove-bg" ? "PNG ✦" : outputExt}
                 </span>
@@ -217,8 +217,8 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
       {file && mode === "convert" && (
         <div className="animate-fade-up space-y-2.5">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Convert to</span>
-            <span className="inline-flex items-center gap-1.5 text-xs text-zinc-500 font-mono">
+            <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">Convert to</span>
+            <span className="inline-flex items-center gap-1.5 text-xs text-fg-subtle font-mono">
               {ext.toUpperCase()} <ArrowRight className="w-3 h-3" />
               <span className="text-violet-300">{format.toUpperCase()}</span>
             </span>
@@ -226,7 +226,7 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
 
           {formats.list.length > 15 && (
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-fg-subtle" />
               <input
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
@@ -239,7 +239,7 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
           <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-[184px] overflow-y-auto pr-1 -mr-1 [scrollbar-width:thin]">
             {formats.loading
               ? Array.from({ length: 10 }, (_, i) => (
-                  <div key={i} className="h-10 rounded-lg bg-white/[0.05] animate-pulse" style={{ animationDelay: `${i * 60}ms` }} />
+                  <div key={i} className="h-10 rounded-lg bg-tint/[0.05] animate-pulse" style={{ animationDelay: `${i * 60}ms` }} />
                 ))
               : visibleFormats.map((f) => {
                   const active = f === format
@@ -251,8 +251,8 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
                       aria-pressed={active}
                       className={`h-10 rounded-lg text-xs font-semibold font-mono uppercase transition-all ${
                         active
-                          ? "text-white bg-violet-500/20 ring-1 ring-inset ring-violet-400/60 shadow-[0_0_20px] shadow-violet-500/20"
-                          : "text-zinc-400 bg-white/[0.03] ring-1 ring-inset ring-white/10 hover:text-zinc-100 hover:bg-white/[0.06]"
+                          ? "text-fg bg-violet-500/20 ring-1 ring-inset ring-violet-400/60 shadow-[0_0_20px] shadow-violet-500/20"
+                          : "text-fg-muted bg-tint/[0.03] ring-1 ring-inset ring-tint/10 hover:text-fg hover:bg-tint/[0.06]"
                       }`}
                     >
                       {f}
@@ -260,14 +260,14 @@ export default function ConvertTool({ mode }: { mode: "convert" | "remove-bg" })
                   )
                 })}
             {!formats.loading && visibleFormats.length === 0 && (
-              <p className="col-span-full py-3 text-center text-sm text-zinc-500">No formats match “{filter}”.</p>
+              <p className="col-span-full py-3 text-center text-sm text-fg-subtle">No formats match “{filter}”.</p>
             )}
           </div>
         </div>
       )}
 
       {file && mode === "remove-bg" && (
-        <p className="animate-fade-up text-xs text-zinc-500">You&apos;ll get a transparent PNG with the background removed.</p>
+        <p className="animate-fade-up text-xs text-fg-subtle">You&apos;ll get a transparent PNG with the background removed.</p>
       )}
 
       {file && (

@@ -37,7 +37,7 @@ const KINDS = {
   audio: { icon: Music, tint: "from-amber-500/25 to-orange-600/10 text-amber-300 ring-amber-400/30" },
   video: { icon: Film, tint: "from-emerald-500/25 to-teal-600/10 text-emerald-300 ring-emerald-400/30" },
   archive: { icon: FileArchive, tint: "from-yellow-500/25 to-amber-600/10 text-yellow-200 ring-yellow-400/30" },
-  other: { icon: FileIcon, tint: "from-zinc-500/25 to-zinc-600/10 text-zinc-300 ring-zinc-400/30" },
+  other: { icon: FileIcon, tint: "from-zinc-500/25 to-zinc-600/10 text-fg-3 ring-zinc-400/30" },
 } satisfies Record<string, { icon: LucideIcon; tint: string }>
 
 const EXT_KIND: Record<string, keyof typeof KINDS> = {

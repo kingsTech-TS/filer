@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" width="36" height="36">
+  <!-- Filer logo mark (same as the header logo); glyph enlarged for small favicon sizes -->
+  <defs>
+    <linearGradient id="filer-gradient" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#d946ef" />
+    </linearGradient>
+  </defs>
+  <rect width="36" height="36" rx="10" fill="url(#filer-gradient)" />
+  <g transform="translate(5 5) scale(1.0833)" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M7 3h7l5 5v11a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" />
+    <path d="M9 13h6M13 10l3 3-3 3" />
+  </g>
+</svg>

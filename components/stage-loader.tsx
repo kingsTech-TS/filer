@@ -35,7 +35,7 @@ function Ring({ value }: { value?: number }) {
           <stop offset="100%" stopColor="#e879f9" />
         </linearGradient>
       </defs>
-      <circle cx="64" cy="64" r={RING_R} fill="none" stroke="white" strokeOpacity={0.07} strokeWidth={6} />
+      <circle cx="64" cy="64" r={RING_R} fill="none" className="stroke-tint" strokeOpacity={0.07} strokeWidth={6} />
       <circle
         cx="64"
         cy="64"
@@ -81,7 +81,7 @@ function ConvertingVisual({ inputExt, outputExt }: { inputExt: string; outputExt
       <span className="absolute top-1/2 left-1/2 -m-0.75 w-1.5 h-1.5 rounded-full bg-indigo-300 animate-orbit [--orbit-r:44px] [animation-delay:-1.2s]" />
       {/* Format flip: input ⇄ output */}
       <div className="relative w-16 h-8 [perspective:200px]">
-        <span className="absolute inset-0 grid place-items-center rounded-lg font-mono text-sm font-bold uppercase text-zinc-200 bg-white/10 ring-1 ring-inset ring-white/15 animate-swap-out">
+        <span className="absolute inset-0 grid place-items-center rounded-lg font-mono text-sm font-bold uppercase text-fg-2 bg-tint/10 ring-1 ring-inset ring-tint/15 animate-swap-out">
           {inputExt || "file"}
         </span>
         <span className="absolute inset-0 grid place-items-center rounded-lg font-mono text-sm font-bold uppercase text-violet-100 bg-violet-500/30 ring-1 ring-inset ring-violet-300/40 animate-swap-in">
@@ -155,7 +155,7 @@ function Stepper({ status, step, icon }: { status: Stage; step: string; icon: Lu
                     ? "bg-emerald-500/20 ring-emerald-400/50 text-emerald-300"
                     : active
                       ? "bg-violet-500/20 ring-violet-400/60 text-violet-200 shadow-[0_0_18px] shadow-violet-500/40"
-                      : "bg-white/[0.03] ring-white/10 text-zinc-600"
+                      : "bg-tint/[0.03] ring-tint/10 text-fg-faint"
                 }`}
               >
                 {active && <span className="absolute inset-0 rounded-full ring-2 ring-violet-400/40 animate-ping" />}
@@ -163,14 +163,14 @@ function Stepper({ status, step, icon }: { status: Stage; step: string; icon: Lu
               </div>
               <span
                 className={`text-[11px] font-medium transition-colors ${
-                  active ? "text-zinc-200" : done ? "text-emerald-300/80" : "text-zinc-600"
+                  active ? "text-fg-2" : done ? "text-emerald-300/80" : "text-fg-faint"
                 }`}
               >
                 {label}
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className="relative flex-1 h-0.5 mx-2 mb-5 rounded-full bg-white/10 overflow-hidden">
+              <div className="relative flex-1 h-0.5 mx-2 mb-5 rounded-full bg-tint/10 overflow-hidden">
                 <div
                   className={`absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-violet-400 transition-[width] duration-700 ease-out ${
                     done ? "w-full" : "w-0"
@@ -248,10 +248,10 @@ export default function StageLoader({
           {uploading ? (
             <p className="text-2xl font-semibold tabular-nums tracking-tight">
               {Math.round(progress)}
-              <span className="text-base text-zinc-500">%</span>
+              <span className="text-base text-fg-subtle">%</span>
             </p>
           ) : (
-            <p className="text-sm font-medium text-zinc-300 inline-flex items-center gap-1">
+            <p className="text-sm font-medium text-fg-3 inline-flex items-center gap-1">
               Processing
               <span className="inline-flex">
                 {[0, 1, 2].map((i) => (
@@ -262,7 +262,7 @@ export default function StageLoader({
               </span>
             </p>
           )}
-          <p className="text-xs text-zinc-500 mt-0.5">{caption}</p>
+          <p className="text-xs text-fg-subtle mt-0.5">{caption}</p>
         </div>
       </div>
 

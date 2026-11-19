@@ -300,14 +300,14 @@ function ShapePicker({ value, onChange, shapes }: { value: Shape; onChange: (s: 
             aria-pressed={active}
             title={s}
             className={`group flex flex-col items-center gap-1.5 py-2 rounded-lg ring-1 ring-inset transition-all ${
-              active ? "bg-violet-500/15 ring-violet-400/60" : "bg-white/[0.03] ring-white/10 hover:bg-white/[0.06]"
+              active ? "bg-violet-500/15 ring-violet-400/60" : "bg-tint/[0.03] ring-tint/10 hover:bg-tint/[0.06]"
             }`}
           >
             <span
-              className={`w-6 h-6 ${s === "none" ? "border border-dashed border-zinc-500 rounded-md" : active ? "bg-violet-300" : "bg-zinc-500 group-hover:bg-zinc-300"} transition-colors`}
+              className={`w-6 h-6 ${s === "none" ? "border border-dashed border-fg-subtle rounded-md" : active ? "bg-violet-300" : "bg-fg-subtle group-hover:bg-fg-3"} transition-colors`}
               style={s === "none" ? undefined : shapeStyle(s)}
             />
-            <span className={`text-[10px] capitalize ${active ? "text-violet-100" : "text-zinc-500"}`}>{s}</span>
+            <span className={`text-[10px] capitalize ${active ? "text-violet-100" : "text-fg-subtle"}`}>{s}</span>
           </button>
         )
       })}
@@ -342,7 +342,7 @@ const SURFACE: Record<Theme, string> = {
 
 function ThemeToggle({ value, onChange }: { value: Theme; onChange: (t: Theme) => void }) {
   return (
-    <div role="radiogroup" aria-label="Preview theme" className="inline-flex p-0.5 rounded-lg bg-white/[0.04] ring-1 ring-inset ring-white/10">
+    <div role="radiogroup" aria-label="Preview theme" className="inline-flex p-0.5 rounded-lg bg-tint/[0.04] ring-1 ring-inset ring-tint/10">
       {(
         [
           ["light", Sun, "Light"],
@@ -356,7 +356,7 @@ function ThemeToggle({ value, onChange }: { value: Theme; onChange: (t: Theme) =
           aria-checked={value === t}
           onClick={() => onChange(t)}
           className={`inline-flex items-center gap-1 h-7 px-2.5 rounded-md text-xs font-medium transition-colors ${
-            value === t ? "bg-white/10 text-white" : "text-zinc-500 hover:text-zinc-200"
+            value === t ? "bg-tint/10 text-fg" : "text-fg-subtle hover:text-fg-2"
           }`}
         >
           <Icon className="w-3.5 h-3.5" />
@@ -503,13 +503,13 @@ export default function FaviconTool() {
         title={{ uploading: "Sending your design", processing: "Generating icons", finished: "Your favicon pack is ready" }}
         summary={
           task.status !== "finished" && (
-            <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/[0.04] ring-1 ring-inset ring-white/10">
+            <div className="flex items-center gap-3 p-3 rounded-2xl bg-tint/[0.04] ring-1 ring-inset ring-tint/10">
               <div className="grid place-items-center w-11 h-11 rounded-xl bg-checker overflow-hidden">
                 <IconArt cfg={previewCfg} size={36} imageUrl={imageUrl} />
               </div>
               <div className="min-w-0">
                 <p className="text-sm font-medium truncate">{appTitle}</p>
-                <p className="text-xs text-zinc-500">Favicon from {cfg.source}</p>
+                <p className="text-xs text-fg-subtle">Favicon from {cfg.source}</p>
               </div>
             </div>
           )
@@ -528,14 +528,14 @@ export default function FaviconTool() {
             {/* Icon sizes */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Icons</span>
+                <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">Icons</span>
                 <ThemeToggle value={previewTheme} onChange={setPreviewTheme} />
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                 {icons.map((f, i) => (
                   <div
                     key={f.index}
-                    className="group animate-fade-up relative flex flex-col items-center gap-2 p-3 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.07]"
+                    className="group animate-fade-up relative flex flex-col items-center gap-2 p-3 rounded-xl bg-tint/[0.03] ring-1 ring-inset ring-tint/[0.07]"
                     style={{ animationDelay: `${i * 50}ms` }}
                   >
                     <div className={`grid place-items-center w-16 h-16 rounded-lg ring-1 ring-inset transition-colors duration-300 ${SURFACE[previewTheme]}`}>
@@ -547,10 +547,10 @@ export default function FaviconTool() {
                       />
                     </div>
                     <div className="w-full text-center">
-                      <p className="text-[11px] font-mono text-zinc-300">
+                      <p className="text-[11px] font-mono text-fg-3">
                         {f.width}×{f.height}
                       </p>
-                      <p className="truncate text-[10px] text-zinc-500" title={f.name}>
+                      <p className="truncate text-[10px] text-fg-subtle" title={f.name}>
                         {f.name}
                       </p>
                     </div>
@@ -563,10 +563,10 @@ export default function FaviconTool() {
               {extras.length > 0 && (
                 <ul className="space-y-1.5 pt-1">
                   {extras.map((f) => (
-                    <li key={f.index} className="flex items-center gap-3 px-2.5 py-1.5 rounded-xl bg-white/[0.03] ring-1 ring-inset ring-white/[0.07]">
+                    <li key={f.index} className="flex items-center gap-3 px-2.5 py-1.5 rounded-xl bg-tint/[0.03] ring-1 ring-inset ring-tint/[0.07]">
                       <FileBadge ext={getExtension(f.name)} size="sm" />
-                      <span className="flex-1 truncate text-sm font-mono text-zinc-300">{f.name}</span>
-                      <span className="text-xs text-zinc-500">{formatSize(f.size)}</span>
+                      <span className="flex-1 truncate text-sm font-mono text-fg-3">{f.name}</span>
+                      <span className="text-xs text-fg-subtle">{formatSize(f.size)}</span>
                       <DownloadIconButton path={f.download_url} fileName={f.name} />
                     </li>
                   ))}
@@ -577,10 +577,10 @@ export default function FaviconTool() {
             {/* HTML */}
             <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Add to your &lt;head&gt;</span>
+                <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">Add to your &lt;head&gt;</span>
                 <CopyButton text={task.result.html} />
               </div>
-              <pre className="overflow-x-auto rounded-xl p-4 text-xs leading-relaxed font-mono text-zinc-300 bg-black/40 ring-1 ring-inset ring-white/10 [scrollbar-width:thin]">
+              <pre className="overflow-x-auto rounded-xl p-4 text-xs leading-relaxed font-mono text-fg-3 bg-tint/[0.04] dark:bg-black/40 ring-1 ring-inset ring-tint/10 [scrollbar-width:thin]">
                 {task.result.html}
               </pre>
             </div>
@@ -616,7 +616,7 @@ export default function FaviconTool() {
       <aside className="md:order-2 space-y-3">
         <div className="md:sticky md:top-6 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-medium uppercase tracking-wider text-zinc-500">Preview</span>
+            <span className="text-xs font-medium uppercase tracking-wider text-fg-subtle">Preview</span>
             <ThemeToggle value={previewTheme} onChange={setPreviewTheme} />
           </div>
           <div
@@ -632,14 +632,14 @@ export default function FaviconTool() {
             {[48, 32, 16].map((s) => (
               <div key={s} className="flex flex-col items-center gap-1.5">
                 <IconArt cfg={previewCfg} size={s} variant={previewTheme} imageUrl={imageUrl} />
-                <span className="text-[10px] font-mono text-zinc-500">{s}px</span>
+                <span className="text-[10px] font-mono text-fg-subtle">{s}px</span>
               </div>
             ))}
           </div>
           <BrowserTab theme="light" title={appTitle} icon={<IconArt cfg={previewCfg} size={16} imageUrl={imageUrl} />} />
           <BrowserTab theme="dark" title={appTitle} icon={<IconArt cfg={previewCfg} size={16} variant="dark" imageUrl={imageUrl} />} />
           {previewTheme === "dark" && canDark && !showDark && (
-            <p className="animate-fade-up text-[11px] text-zinc-400 text-center">
+            <p className="animate-fade-up text-[11px] text-fg-muted text-center">
               Same colors as light mode.{" "}
               <button type="button" onClick={() => set("dark", true)} className="text-violet-300 hover:underline underline-offset-2">
                 Customize dark mode
@@ -647,9 +647,9 @@ export default function FaviconTool() {
             </p>
           )}
           {previewTheme === "dark" && cfg.source === "image" && (
-            <p className="animate-fade-up text-[11px] text-zinc-400 text-center">Image icons use the same design in both themes.</p>
+            <p className="animate-fade-up text-[11px] text-fg-muted text-center">Image icons use the same design in both themes.</p>
           )}
-          <p className="text-[11px] text-center text-zinc-600">Live preview — final icons are rendered on the server.</p>
+          <p className="text-[11px] text-center text-fg-faint">Live preview — final icons are rendered on the server.</p>
         </div>
       </aside>
 
@@ -722,7 +722,7 @@ export default function FaviconTool() {
                         className={`${inputClass} appearance-none`}
                       >
                         {options.font_weights.map((w) => (
-                          <option key={w} value={w} className="bg-zinc-900">
+                          <option key={w} value={w} className="bg-sunken">
                             {w}
                           </option>
                         ))}
@@ -736,7 +736,7 @@ export default function FaviconTool() {
                         type="button"
                         onClick={() => set("font", f)}
                         className={`px-2 py-1 rounded-md text-[11px] ring-1 ring-inset transition-colors ${
-                          cfg.font === f ? "bg-violet-500/15 ring-violet-400/50 text-violet-100" : "ring-white/10 text-zinc-500 hover:text-zinc-200"
+                          cfg.font === f ? "bg-violet-500/15 ring-violet-400/50 text-violet-100" : "ring-tint/10 text-fg-subtle hover:text-fg-2"
                         }`}
                       >
                         {f}
@@ -753,7 +753,7 @@ export default function FaviconTool() {
                       onRemove={() => set("fontFile", null)}
                       aside={
                         uploadedFamily && (
-                          <span className="hidden sm:inline text-lg text-zinc-200" style={{ fontFamily: `"${uploadedFamily}"` }}>
+                          <span className="hidden sm:inline text-lg text-fg-2" style={{ fontFamily: `"${uploadedFamily}"` }}>
                             Aa
                           </span>
                         )
@@ -766,13 +766,13 @@ export default function FaviconTool() {
                       icon={FileType}
                       title="Drop your font here, or "
                       hint={
-                        <p className="text-xs text-zinc-400">
+                        <p className="text-xs text-fg-muted">
                           {options.font_file_formats.map((e) => `.${e}`).join(", ")} · up to {options.max_font_file_mb} MB
                         </p>
                       }
                     />
                   )}
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-fg-subtle">
                     Weight and style come from the font file. Only use fonts you have the rights to — the file is used
                     to draw your icon and isn&apos;t kept.
                   </p>
@@ -824,7 +824,7 @@ export default function FaviconTool() {
                     type="button"
                     onClick={() => set("emoji", e)}
                     className={`h-9 rounded-lg text-lg transition-all hover:scale-110 ${
-                      cfg.emoji === e ? "bg-violet-500/20 ring-1 ring-inset ring-violet-400/60" : "hover:bg-white/5"
+                      cfg.emoji === e ? "bg-violet-500/20 ring-1 ring-inset ring-violet-400/60" : "hover:bg-tint/5"
                     }`}
                   >
                     {e}
@@ -867,11 +867,11 @@ export default function FaviconTool() {
             <ShapePicker value={cfg[shapeKey]} onChange={(s) => set(shapeKey, s)} shapes={options.shapes} />
           </Field>
           {cfg.source !== "image" && cfg[shapeKey] !== "none" && cfg[bgKey] === "transparent" && (
-            <p className="-mt-3 text-xs text-zinc-500">Pick a background color to see the shape.</p>
+            <p className="-mt-3 text-xs text-fg-subtle">Pick a background color to see the shape.</p>
           )}
 
           {canDark && (
-            <div className="space-y-4 rounded-2xl p-4 bg-white/[0.02] ring-1 ring-inset ring-white/[0.07]">
+            <div className="space-y-4 rounded-2xl p-4 bg-tint/[0.02] ring-1 ring-inset ring-tint/[0.07]">
               <Switch checked={cfg.dark} onChange={(v) => set("dark", v)} label="Different colors in dark mode" />
               {cfg.dark && (
                 <div className="grid sm:grid-cols-2 gap-3 animate-fade-up">
